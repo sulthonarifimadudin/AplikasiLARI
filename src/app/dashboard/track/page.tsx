@@ -1,10 +1,17 @@
-import Image from 'next/image';
+'use client';
+
+import dynamic from 'next/dynamic';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { RunTracker } from '@/components/dashboard/run-tracker';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
+import { useState } from 'react';
+import { LatLngTuple } from 'leaflet';
+
+const MapView = dynamic(() => import('@/components/dashboard/map-view'), {
+  ssr: false,
+});
 
 export default function TrackRunPage() {
-    const mapImage = PlaceHolderImages.find((img) => img.id === 'map-route');
+    const [route, setRoute] = useState<LatLngTuple[]>([]);
 
   return (
     <div className="flex flex-col gap-6">
@@ -15,7 +22,7 @@ export default function TrackRunPage() {
             </div>
         </div>
 
-        <RunTracker />
+        <RunTracker setRoute={setRoute}/>
 
         <Card>
             <CardHeader>
@@ -24,18 +31,7 @@ export default function TrackRunPage() {
             </CardHeader>
             <CardContent>
                 <div className="aspect-[4/3] w-full rounded-md overflow-hidden bg-muted flex items-center justify-center">
-                    {mapImage ? (
-                        <Image 
-                            src={mapImage.imageUrl} 
-                            alt={mapImage.description}
-                            width={800}
-                            height={600}
-                            className="w-full h-full object-cover"
-                            data-ai-hint={mapImage.imageHint}
-                        />
-                    ) : (
-                        <p className="text-muted-foreground">Map will appear here</p>
-                    )}
+                   <MapView route={route} />
                 </div>
             </CardContent>
         </Card>

@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Play, Square, Pause } from 'lucide-react';
+import { LatLngTuple } from 'leaflet';
 
 const formatTime = (totalSeconds: number) => {
   const hours = Math.floor(totalSeconds / 3600);
@@ -14,7 +15,11 @@ const formatTime = (totalSeconds: number) => {
     .padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 };
 
-export function RunTracker() {
+type RunTrackerProps = {
+  setRoute: React.Dispatch<React.SetStateAction<LatLngTuple[]>>;
+};
+
+export function RunTracker({ setRoute }: RunTrackerProps) {
   const [isActive, setIsActive] = useState(false);
   const [isPaused, setIsPaused] = useState(true);
   const [time, setTime] = useState(0);
@@ -22,24 +27,53 @@ export function RunTracker() {
 
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
+    let locationWatcher: number | null = null;
+
     if (isActive && !isPaused) {
       interval = setInterval(() => {
         setTime((time) => time + 1);
-        // Simulate distance increase, assuming a pace of ~5:30 min/km
-        setDistance((d) => d + 1 / 330);
       }, 1000);
+
+      locationWatcher = navigator.geolocation.watchPosition(
+        (position) => {
+          const { latitude, longitude, speed } = position.coords;
+          setRoute((prevRoute) => {
+            const newPoint: LatLngTuple = [latitude, longitude];
+            if (prevRoute.length > 0) {
+              const lastPoint = prevRoute[prevRoute.length - 1];
+              const R = 6371; // Radius of the Earth in km
+              const dLat = (newPoint[0] - lastPoint[0]) * (Math.PI / 180);
+              const dLon = (newPoint[1] - lastPoint[1]) * (Math.PI / 180);
+              const a =
+                Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(lastPoint[0] * (Math.PI / 180)) *
+                  Math.cos(newPoint[0] * (Math.PI / 180)) *
+                  Math.sin(dLon / 2) *
+                  Math.sin(dLon / 2);
+              const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+              const newDistance = R * c;
+              setDistance((d) => d + newDistance);
+            }
+            return [...prevRoute, newPoint];
+          });
+        },
+        (error) => {
+          console.error('Error getting location', error);
+        },
+        { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+      );
     }
     return () => {
-      if (interval) {
-        clearInterval(interval);
-      }
+      if (interval) clearInterval(interval);
+      if (locationWatcher) navigator.geolocation.clearWatch(locationWatcher);
     };
-  }, [isActive, isPaused]);
+  }, [isActive, isPaused, setRoute]);
 
   const handleStart = () => {
     if (!isActive) {
         setTime(0);
         setDistance(0);
+        setRoute([]);
     }
     setIsActive(true);
     setIsPaused(false);
