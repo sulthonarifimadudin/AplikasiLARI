@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import MapView from '../components/MapView';
 import { searchPlaces } from '../services/geocoding';
