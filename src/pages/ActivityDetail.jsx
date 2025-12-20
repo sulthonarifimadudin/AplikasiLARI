@@ -384,7 +384,7 @@ const ActivityDetail = () => {
                         <div className="absolute inset-0 flex items-center justify-center drop-shadow-2xl">
                             <RouteSvgRenderer
                                 routePath={activity.routePath}
-                                color="#ffffff"
+                                strokeColor="#ffffff"
                                 strokeWidth={14}
                             />
                         </div>
@@ -392,7 +392,7 @@ const ActivityDetail = () => {
                         <div className="absolute inset-0 flex items-center justify-center">
                             <RouteSvgRenderer
                                 routePath={activity.routePath}
-                                color="#f97316"
+                                strokeColor="#f97316"
                                 strokeWidth={8}
                             />
                         </div>
