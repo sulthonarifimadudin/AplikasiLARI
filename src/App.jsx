@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 import StartActivity from './pages/StartActivity';
 import Dashboard from './pages/Dashboard';
 import ActivityDetail from './pages/ActivityDetail';
@@ -30,39 +31,41 @@ function App() {
     return (
         <Router>
             <AuthProvider>
-                <Routes>
-                    <Route path="/login" element={<Login />} />
+                <ThemeProvider>
+                    <Routes>
+                        <Route path="/login" element={<Login />} />
 
-                    <Route path="/" element={
-                        <ProtectedRoute>
-                            <Dashboard />
-                        </ProtectedRoute>
-                    } />
+                        <Route path="/" element={
+                            <ProtectedRoute>
+                                <Dashboard />
+                            </ProtectedRoute>
+                        } />
 
-                    <Route path="/start" element={
-                        <ProtectedRoute>
-                            <StartActivity />
-                        </ProtectedRoute>
-                    } />
+                        <Route path="/start" element={
+                            <ProtectedRoute>
+                                <StartActivity />
+                            </ProtectedRoute>
+                        } />
 
-                    <Route path="/activity/:id" element={
-                        <ProtectedRoute>
-                            <ActivityDetail />
-                        </ProtectedRoute>
-                    } />
+                        <Route path="/activity/:id" element={
+                            <ProtectedRoute>
+                                <ActivityDetail />
+                            </ProtectedRoute>
+                        } />
 
-                    <Route path="/stats" element={
-                        <ProtectedRoute>
-                            <Statistics />
-                        </ProtectedRoute>
-                    } />
+                        <Route path="/stats" element={
+                            <ProtectedRoute>
+                                <Statistics />
+                            </ProtectedRoute>
+                        } />
 
-                    <Route path="/profile" element={
-                        <ProtectedRoute>
-                            <Profile />
-                        </ProtectedRoute>
-                    } />
-                </Routes>
+                        <Route path="/profile" element={
+                            <ProtectedRoute>
+                                <Profile />
+                            </ProtectedRoute>
+                        } />
+                    </Routes>
+                </ThemeProvider>
             </AuthProvider>
         </Router>
     );
