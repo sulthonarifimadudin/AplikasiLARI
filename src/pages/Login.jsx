@@ -7,6 +7,9 @@ const Login = () => {
     const [isLogin, setIsLogin] = useState(true);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
     const [loading, setLoading] = useState(false);
     const [errorMsg, setErrorMsg] = useState('');
 
@@ -24,7 +27,19 @@ const Login = () => {
                 if (error) throw error;
                 navigate('/');
             } else {
-                const { error } = await signUp({ email, password });
+                if (password !== confirmPassword) {
+                    throw new Error("Password dan Konfirmasi Password tidak sama!");
+                }
+                const { error } = await signUp({
+                    email,
+                    password,
+                    options: {
+                        data: {
+                            first_name: firstName,
+                            last_name: lastName
+                        }
+                    }
+                });
                 if (error) throw error;
                 alert('Registrasi berhasil! Silakan login (cek email jika perlu verifikasi).');
                 setIsLogin(true);
@@ -52,6 +67,33 @@ const Login = () => {
                 )}
 
                 <form onSubmit={handleSubmit} className="space-y-4">
+                    {!isLogin && (
+                        <div className="flex gap-3">
+                            <div>
+                                <label className="block text-xs font-bold text-gray-700 mb-1 uppercase">Nama Depan</label>
+                                <input
+                                    type="text"
+                                    required={!isLogin}
+                                    className="w-full border border-gray-300 rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-navy-500"
+                                    placeholder="Agus"
+                                    value={firstName}
+                                    onChange={e => setFirstName(e.target.value)}
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-xs font-bold text-gray-700 mb-1 uppercase">Nama Belakang</label>
+                                <input
+                                    type="text"
+                                    required={!isLogin}
+                                    className="w-full border border-gray-300 rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-navy-500"
+                                    placeholder="Supri"
+                                    value={lastName}
+                                    onChange={e => setLastName(e.target.value)}
+                                />
+                            </div>
+                        </div>
+                    )}
+
                     <div>
                         <label className="block text-xs font-bold text-gray-700 mb-1 uppercase">Email</label>
                         <input
@@ -64,7 +106,7 @@ const Login = () => {
                         />
                     </div>
                     <div>
-                        <label className="block text-xs font-bold text-gray-700 mb-1 uppercase">Password</label>
+                        <label className="block text-xs font-bold text-gray-700 mb-1 uppercase">{isLogin ? 'Password' : 'Buat Password'}</label>
                         <input
                             type="password"
                             required
@@ -74,6 +116,19 @@ const Login = () => {
                             onChange={e => setPassword(e.target.value)}
                         />
                     </div>
+                    {!isLogin && (
+                        <div>
+                            <label className="block text-xs font-bold text-gray-700 mb-1 uppercase">Konfirmasi Password</label>
+                            <input
+                                type="password"
+                                required={!isLogin}
+                                className="w-full border border-gray-300 rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-navy-500"
+                                placeholder="********"
+                                value={confirmPassword}
+                                onChange={e => setConfirmPassword(e.target.value)}
+                            />
+                        </div>
+                    )}
 
                     <button
                         type="submit"
