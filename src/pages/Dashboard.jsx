@@ -33,7 +33,7 @@ const Dashboard = () => {
             {/* Sticky Header Section */}
             {/* Sticky Header Section */}
             {/* Sticky Header Section */}
-            <div className="sticky top-0 z-40 bg-gray-50 dark:bg-navy-950 -mx-4 -mt-6 px-4 pt-[max(2rem,env(safe-area-inset-top))] pb-4 mb-4 transition-all shadow-sm border-b border-gray-100 dark:border-navy-800">
+            <div className="sticky top-0 z-40 -mx-4 -mt-6 px-4 pt-[max(2rem,env(safe-area-inset-top))] pb-4 mb-4 transition-all">
                 <h2 className="text-xl font-bold text-navy-900 dark:text-white mb-2">Minggu Ini</h2>
                 <div className="bg-gradient-to-br from-navy-800 to-navy-950 rounded-2xl p-6 text-white shadow-lg shadow-navy-900/20">
                     <div className="flex justify-between items-start mb-4">
