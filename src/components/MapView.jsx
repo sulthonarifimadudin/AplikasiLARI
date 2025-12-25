@@ -54,7 +54,7 @@ const MapView = ({ routePath = [], currentPos, zoom = 15, interactive = true }) 
                     <LayersControl.BaseLayer checked name="Google Maps">
                         <TileLayer
                             attribution='&copy; Google Maps'
-                            url="http://{s}.google.com/vt?lyrs=m&x={x}&y={y}&z={z}"
+                            url="https://{s}.google.com/vt?lyrs=m&x={x}&y={y}&z={z}"
                             maxZoom={20}
                             subdomains={['mt0', 'mt1', 'mt2', 'mt3']}
                         />
@@ -63,7 +63,7 @@ const MapView = ({ routePath = [], currentPos, zoom = 15, interactive = true }) 
                     <LayersControl.BaseLayer name="Satelit">
                         <TileLayer
                             attribution='&copy; Google Maps'
-                            url="http://{s}.google.com/vt?lyrs=s,h&x={x}&y={y}&z={z}"
+                            url="https://{s}.google.com/vt?lyrs=s,h&x={x}&y={y}&z={z}"
                             maxZoom={20}
                             subdomains={['mt0', 'mt1', 'mt2', 'mt3']}
                         />
