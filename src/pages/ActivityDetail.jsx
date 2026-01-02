@@ -228,6 +228,37 @@ const ActivityDetail = () => {
         }
     };
 
+    const handleShareLink = async () => {
+        const shareUrl = window.location.href; // Or construct specifically if needed
+        const shareTitle = `Lihat lari gue: ${activity.title} (${activity.distance.toFixed(1)}km)`;
+        const shareText = `Gue baru aja lari sejauh ${activity.distance.toFixed(2)}km di Este.RUN! Cek detailnya:`;
+
+        try {
+            if (Capacitor.isNativePlatform()) {
+                await Share.share({
+                    title: shareTitle,
+                    text: shareText,
+                    url: shareUrl,
+                    dialogTitle: 'Bagikan Aktivitas',
+                });
+            } else {
+                if (navigator.share) {
+                    await navigator.share({
+                        title: shareTitle,
+                        text: shareText,
+                        url: shareUrl
+                    });
+                } else {
+                    await navigator.clipboard.writeText(shareUrl);
+                    alert("Link disalin ke clipboard! 📋");
+                }
+            }
+        } catch (error) {
+            console.error("Error sharing:", error);
+            // Ignore abort error
+        }
+    };
+
     if (loading) return <Layout><div className="flex h-full items-center justify-center"><Loader2 className="animate-spin text-navy-900" /></div></Layout>;
     if (!activity) return <Layout>Data tidak ditemukan.</Layout>;
 
@@ -239,6 +270,13 @@ const ActivityDetail = () => {
                     <ChevronLeft className="text-navy-900" />
                 </button>
                 <div className="flex gap-2">
+                    <button
+                        onClick={handleShareLink}
+                        className="p-2 hover:bg-gray-100 dark:hover:bg-navy-800 text-navy-600 dark:text-gray-300 rounded-full transition-colors"
+                        title="Bagikan Link"
+                    >
+                        <Share2 size={20} />
+                    </button>
                     <button
                         onClick={handleDeleteActivity}
                         disabled={isDeleting}

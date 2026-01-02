@@ -73,7 +73,7 @@ const Layout = ({ children }) => {
 
             <nav className="fixed bottom-0 w-full max-w-md bg-white dark:bg-navy-900 border-t border-gray-100 dark:border-navy-800 flex items-center justify-between px-2 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] dark:shadow-none z-20 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-2 transition-colors">
                 <NavItem to="/" icon={Home} label={t('home')} />
-                <NavItem to="/stats" icon={BarChart2} label={t('recap')} />
+                <NavItem to="/social" icon={Users} label={t('social')} />
 
                 {/* Prominent Rekam Button */}
                 <div className="relative -top-6">
@@ -83,7 +83,7 @@ const Layout = ({ children }) => {
                     </Link>
                 </div>
 
-                <NavItem to="/social" icon={Users} label={t('social')} />
+                <NavItem to="/stats" icon={BarChart2} label={t('recap')} />
                 <NavItem to="/profile" icon={User} label={t('profile')} />
             </nav>
         </div>
