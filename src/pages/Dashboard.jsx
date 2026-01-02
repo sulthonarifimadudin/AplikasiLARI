@@ -4,9 +4,11 @@ import { getActivities } from '../services/activityStorage';
 import { useEffect, useState } from 'react';
 import { TrendingUp, Loader2 } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
     const { t } = useLanguage();
+    const navigate = useNavigate();
     const [activities, setActivities] = useState([]);
     const [totalDistance, setTotalDistance] = useState(0);
     const [loading, setLoading] = useState(true);
@@ -43,7 +45,10 @@ const Dashboard = () => {
                         {t('this_week')}
                     </h2>
                 </div>
-                <div className="bg-gradient-to-br from-navy-800 to-navy-950 rounded-2xl p-6 text-white shadow-lg shadow-navy-900/20">
+                <div
+                    onClick={() => navigate('/stats')}
+                    className="bg-gradient-to-br from-navy-800 to-navy-950 rounded-2xl p-6 text-white shadow-lg shadow-navy-900/20 cursor-pointer hover:shadow-xl hover:scale-[1.02] transition-all active:scale-[0.98]"
+                >
                     <div className="flex justify-between items-start mb-4">
                         <div>
                             <p className="text-navy-100 font-medium text-sm">{t('total_distance')}</p>
