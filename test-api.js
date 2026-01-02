@@ -1,5 +1,5 @@
 
-const API_KEY = "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";
+const API_KEY = "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";
 
 async function testOpenRouter() {
     console.log("Testing OpenRouter API...");

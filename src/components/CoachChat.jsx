@@ -9,6 +9,13 @@ const CoachChat = () => {
     ]);
     const [input, setInput] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+
+    // Dragging State
+    const [position, setPosition] = useState(null); // null = default CSS position
+    const [isDragging, setIsDragging] = useState(false);
+    const dragStartPos = useRef({ x: 0, y: 0 });
+    const buttonStartPos = useRef({ x: 0, y: 0 });
+
     const messagesEndRef = useRef(null);
 
     const scrollToBottom = () => {
@@ -18,6 +25,70 @@ const CoachChat = () => {
     useEffect(() => {
         if (isOpen) scrollToBottom();
     }, [messages, isOpen]);
+
+    // --- DRAG HANDLERS ---
+    const handlePointerDown = (e) => {
+        // Only allow left click or touch
+        if (e.button !== 0 && e.button !== undefined) return;
+
+        setIsDragging(false);
+        const btn = e.currentTarget.getBoundingClientRect();
+
+        // Save initial positions
+        dragStartPos.current = { x: e.clientX, y: e.clientY };
+        buttonStartPos.current = { x: btn.left, y: btn.top };
+
+        // Attach listeners to window to track drag even if cursor leaves button
+        window.addEventListener('pointermove', handlePointerMove);
+        window.addEventListener('pointerup', handlePointerUp);
+    };
+
+    const handlePointerMove = (e) => {
+        const deltaX = e.clientX - dragStartPos.current.x;
+        const deltaY = e.clientY - dragStartPos.current.y;
+
+        // Threshold to detect drag vs click
+        if (!isDragging && (Math.abs(deltaX) > 5 || Math.abs(deltaY) > 5)) {
+            setIsDragging(true);
+        }
+
+        if (isDragging || Math.abs(deltaX) > 5 || Math.abs(deltaY) > 5) {
+            let newX = buttonStartPos.current.x + deltaX;
+            let newY = buttonStartPos.current.y + deltaY;
+
+            // Boundary checks (keep within screen)
+            const maxX = window.innerWidth - 60; // button width approx
+            const maxY = window.innerHeight - 60;
+
+            newX = Math.max(10, Math.min(newX, maxX));
+            newY = Math.max(10, Math.min(newY, maxY));
+
+            setPosition({ x: newX, y: newY });
+        }
+    };
+
+    const handlePointerUp = (e) => {
+        window.removeEventListener('pointermove', handlePointerMove);
+        window.removeEventListener('pointerup', handlePointerUp);
+
+        // If not dragging, treat as click
+        if (!isDragging) {
+            // Logic handled in onClick, but we can double check here if needed.
+            // Actually, we'll let existing onClick handle toggle if !isDragging
+        }
+
+        // Reset drag flag after a short delay to prevent onClick triggering immediately after drag
+        setTimeout(() => setIsDragging(false), 50);
+    };
+
+    const handleClick = (e) => {
+        if (isDragging) {
+            e.preventDefault();
+            e.stopPropagation();
+            return;
+        }
+        setIsOpen(!isOpen);
+    };
 
     const handleSend = async () => {
         if (!input.trim() || isLoading) return;
@@ -51,56 +122,56 @@ const CoachChat = () => {
             {/* Backdrop Blur Overlay */}
             {isOpen && (
                 <div
-                    className="fixed inset-0 bg-black/30 backdrop-blur-sm z-40 animate-in fade-in duration-200"
+                    className="fixed inset-0 bg-black/40 backdrop-blur-md z-[60] animate-in fade-in duration-200"
                     onClick={() => setIsOpen(false)}
                 />
             )}
 
-            {/* Chat Window Container */}
-            <div className={`fixed bottom-24 right-4 z-50 flex flex-col items-end pointer-events-none transition-all duration-300 ${isOpen ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0 pointer-events-none'}`}>
-                {isOpen && (
-                    <div className="bg-white dark:bg-navy-900 w-80 h-96 rounded-2xl shadow-2xl border border-gray-100 dark:border-navy-700 mb-4 flex flex-col overflow-hidden pointer-events-auto">
+            {/* Chat Window Container (Centered Modal) */}
+            {isOpen && (
+                <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 pointer-events-none">
+                    <div className="bg-white dark:bg-navy-900 w-full max-w-sm h-[80vh] rounded-3xl shadow-2xl border border-gray-100 dark:border-navy-700 flex flex-col overflow-hidden pointer-events-auto animate-in zoom-in-95 duration-200">
                         {/* Header */}
-                        <div className="bg-navy-600 p-4 flex justify-between items-center text-white">
-                            <div className="flex items-center gap-2">
-                                <div className="bg-white/20 p-1.5 rounded-full">
+                        <div className="bg-navy-600 p-4 flex justify-between items-center text-white shrink-0">
+                            <div className="flex items-center gap-3">
+                                <div className="bg-white/20 p-2 rounded-full">
                                     <Sparkles size={20} className="text-yellow-300" />
                                 </div>
                                 <div>
-                                    <h3 className="font-bold text-sm">Coach Este</h3>
-                                    <p className="text-[10px] text-navy-100 flex items-center gap-1">
-                                        <span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"></span>
-                                        Online
+                                    <h3 className="font-bold text-base">Coach Este</h3>
+                                    <p className="text-[11px] text-navy-100 flex items-center gap-1.5 opacity-90">
+                                        <span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse shadow-[0_0_8px_rgba(74,222,128,0.5)]"></span>
+                                        Online & Ready
                                     </p>
                                 </div>
                             </div>
-                            <button onClick={() => setIsOpen(false)} className="hover:bg-white/10 p-1 rounded-full transition-colors">
-                                <X size={18} />
+                            <button onClick={() => setIsOpen(false)} className="hover:bg-white/10 p-2 rounded-full transition-colors active:scale-90">
+                                <X size={20} />
                             </button>
                         </div>
 
                         {/* Messages */}
-                        <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50 dark:bg-navy-950">
+                        <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50 dark:bg-navy-950 scroll-smooth">
                             {messages.map((msg, idx) => (
-                                <div key={idx} className={`flex gap-2 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
-                                    <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 
+                                <div key={idx} className={`flex gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
+                                    <div className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 shadow-sm
                                         ${msg.role === 'user' ? 'bg-gray-200 dark:bg-navy-700 text-gray-600 dark:text-gray-300' : 'bg-navy-100 dark:bg-navy-800 text-navy-600 dark:text-navy-300'}`}>
-                                        {msg.role === 'user' ? <User size={14} /> : <Sparkles size={14} />}
+                                        {msg.role === 'user' ? <User size={16} /> : <Sparkles size={16} />}
                                     </div>
-                                    <div className={`max-w-[80%] rounded-2xl px-4 py-2 text-sm leading-relaxed
+                                    <div className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm leading-relaxed shadow-sm
                                         ${msg.role === 'user'
                                             ? 'bg-navy-600 text-white rounded-tr-none'
-                                            : 'bg-white dark:bg-navy-800 text-gray-700 dark:text-gray-200 shadow-sm border border-gray-100 dark:border-navy-700 rounded-tl-none'}`}>
+                                            : 'bg-white dark:bg-navy-800 text-gray-700 dark:text-gray-200 border border-gray-100 dark:border-navy-700 rounded-tl-none'}`}>
                                         {msg.text}
                                     </div>
                                 </div>
                             ))}
                             {isLoading && (
-                                <div className="flex gap-2">
-                                    <div className="w-8 h-8 rounded-full bg-navy-100 dark:bg-navy-800 flex items-center justify-center">
-                                        <Sparkles size={14} className="text-navy-600" />
+                                <div className="flex gap-3">
+                                    <div className="w-9 h-9 rounded-full bg-navy-100 dark:bg-navy-800 flex items-center justify-center shrink-0">
+                                        <Sparkles size={16} className="text-navy-600" />
                                     </div>
-                                    <div className="bg-white dark:bg-navy-800 px-4 py-3 rounded-2xl rounded-tl-none border border-gray-100 dark:border-navy-700 flex gap-1">
+                                    <div className="bg-white dark:bg-navy-800 px-5 py-4 rounded-2xl rounded-tl-none border border-gray-100 dark:border-navy-700 flex gap-1.5 shadow-sm">
                                         <div className="w-2 h-2 bg-navy-400 rounded-full animate-bounce"></div>
                                         <div className="w-2 h-2 bg-navy-400 rounded-full animate-bounce delay-75"></div>
                                         <div className="w-2 h-2 bg-navy-400 rounded-full animate-bounce delay-150"></div>
@@ -111,35 +182,42 @@ const CoachChat = () => {
                         </div>
 
                         {/* Input */}
-                        <div className="p-3 bg-white dark:bg-navy-900 border-t border-gray-100 dark:border-navy-800 flex gap-2">
+                        <div className="p-4 bg-white dark:bg-navy-900 border-t border-gray-100 dark:border-navy-800 flex gap-3 shrink-0">
                             <input
                                 type="text"
                                 value={input}
                                 onChange={(e) => setInput(e.target.value)}
                                 onKeyDown={handleKeyPress}
                                 placeholder="Tanya soal lari..."
-                                className="flex-1 bg-gray-100 dark:bg-navy-950 text-navy-900 dark:text-white px-4 py-2 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-navy-500"
+                                className="flex-1 bg-gray-100 dark:bg-navy-950 text-navy-900 dark:text-white px-5 py-3 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-navy-500 transition-all border border-transparent focus:border-navy-200 dark:focus:border-navy-700 placeholder:text-gray-400"
                                 disabled={isLoading}
+                                autoFocus
                             />
                             <button
                                 onClick={handleSend}
                                 disabled={!input.trim() || isLoading}
-                                className="bg-navy-600 text-white p-2 rounded-full hover:bg-navy-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                className="bg-navy-600 text-white p-3 rounded-full hover:bg-navy-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-95 shadow-lg shadow-navy-600/30"
                             >
-                                <Send size={18} />
+                                <Send size={20} />
                             </button>
                         </div>
                     </div>
-                )}
-            </div>
+                </div>
+            )}
 
-            {/* Toggle Button */}
-            <button
-                onClick={() => setIsOpen(!isOpen)}
-                className="fixed bottom-4 right-4 z-50 w-14 h-14 bg-gradient-to-tr from-navy-600 to-indigo-500 text-white rounded-full shadow-lg shadow-navy-600/30 flex items-center justify-center hover:scale-105 transition-transform active:scale-95 pointer-events-auto border-4 border-white dark:border-navy-950"
-            >
-                {isOpen ? <X size={28} /> : <Sparkles size={28} />}
-            </button>
+            {/* Draggable Toggle Button */}
+            {!isOpen && (
+                <button
+                    onPointerDown={handlePointerDown}
+                    onClick={handleClick}
+                    style={position ? { bottom: 'auto', right: 'auto', left: position.x, top: position.y } : {}}
+                    className={`fixed z-[50] w-14 h-14 bg-gradient-to-tr from-navy-600 to-indigo-500 text-white rounded-full shadow-lg shadow-navy-600/30 flex items-center justify-center hover:scale-105 active:scale-95 transition-transform touch-none border-4 border-white dark:border-navy-950
+                        ${!position ? 'bottom-[5.5rem] right-4' : ''} 
+                    `} // Adjusted default bottom to avoid navbar overlap if fixed
+                >
+                    <Sparkles size={28} />
+                </button>
+            )}
         </>
     );
 };
