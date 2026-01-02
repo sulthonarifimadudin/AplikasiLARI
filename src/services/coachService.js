@@ -1,6 +1,6 @@
-
 // Access API Key from Environment Variables
-const API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY;
+// Sanitize key (remove quotes/spaces if user accidentally added them)
+const API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY?.trim().replace(/^["']|["']$/g, '');
 
 const SYSTEM_PROMPT = `
 You are "Coach Este", an energetic, professional, and friendly Running Coach for the Este.RUN app.
@@ -45,8 +45,9 @@ export const sendMessageToGemini = async (history, newMessage) => {
         });
 
         if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.error?.message || "API Request Failed");
+            const errorData = await response.json().catch(() => ({}));
+            console.error("OpenRouter API Error Details:", errorData); // Log for debugging
+            throw new Error(errorData.error?.message || `API Error: ${response.statusText}`);
         }
 
         const data = await response.json();
@@ -54,6 +55,6 @@ export const sendMessageToGemini = async (history, newMessage) => {
 
     } catch (error) {
         console.error("Coach Este Error:", error);
-        return `Maaf, Coach lagi pusing 😵. \nError: ${error.message || error.toString()}`;
+        return `Maaf, Coach lagi pusing 😵.\nError: ${error.message || error.toString()}`;
     }
 };
