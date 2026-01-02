@@ -35,63 +35,62 @@ function App() {
     return (
         <Router>
             <AuthProvider>
-                <AuthProvider>
-                    <LanguageProvider>
-                        <ThemeProvider>
-                            <Routes>
-                                <Route path="/login" element={<Login />} />
+                <LanguageProvider>
+                    <ThemeProvider>
+                        <Routes>
+                            <Route path="/login" element={<Login />} />
 
-                                <Route path="/" element={
-                                    <ProtectedRoute>
-                                        <Dashboard />
-                                    </ProtectedRoute>
-                                } />
+                            <Route path="/" element={
+                                <ProtectedRoute>
+                                    <Dashboard />
+                                </ProtectedRoute>
+                            } />
 
-                                <Route path="/start" element={
-                                    <ProtectedRoute>
-                                        <StartActivity />
-                                    </ProtectedRoute>
-                                } />
+                            <Route path="/start" element={
+                                <ProtectedRoute>
+                                    <StartActivity />
+                                </ProtectedRoute>
+                            } />
 
-                                <Route path="/activity/:id" element={
-                                    <ProtectedRoute>
-                                        <ActivityDetail />
-                                    </ProtectedRoute>
-                                } />
+                            <Route path="/activity/:id" element={
+                                <ProtectedRoute>
+                                    <ActivityDetail />
+                                </ProtectedRoute>
+                            } />
 
-                                <Route path="/stats" element={
-                                    <ProtectedRoute>
-                                        <Statistics />
-                                    </ProtectedRoute>
-                                } />
+                            <Route path="/stats" element={
+                                <ProtectedRoute>
+                                    <Statistics />
+                                </ProtectedRoute>
+                            } />
 
-                                <Route path="/profile" element={
-                                    <ProtectedRoute>
-                                        <Profile />
-                                    </ProtectedRoute>
-                                } />
+                            <Route path="/profile" element={
+                                <ProtectedRoute>
+                                    <Profile />
+                                </ProtectedRoute>
+                            } />
 
-                                <Route path="/profile/:id" element={
-                                    <ProtectedRoute>
-                                        <PublicProfile />
-                                    </ProtectedRoute>
-                                } />
+                            <Route path="/profile/:id" element={
+                                <ProtectedRoute>
+                                    <PublicProfile />
+                                </ProtectedRoute>
+                            } />
 
-                                <Route path="/profile/edit" element={
-                                    <ProtectedRoute>
-                                        <EditProfile />
-                                    </ProtectedRoute>
-                                } />
+                            <Route path="/profile/edit" element={
+                                <ProtectedRoute>
+                                    <EditProfile />
+                                </ProtectedRoute>
+                            } />
 
-                                <Route path="/social" element={
-                                    <ProtectedRoute>
-                                        <Social />
-                                    </ProtectedRoute>
-                                } />
-                            </Routes>
-                        </ThemeProvider>
-                    </LanguageProvider>
-                </AuthProvider>
+                            <Route path="/social" element={
+                                <ProtectedRoute>
+                                    <Social />
+                                </ProtectedRoute>
+                            } />
+                        </Routes>
+                    </ThemeProvider>
+                </LanguageProvider>
+            </AuthProvider>
         </Router>
     );
 }

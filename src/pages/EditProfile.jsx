@@ -4,9 +4,11 @@ import { useAuth } from '../contexts/AuthContext';
 import Layout from '../components/Layout';
 import { ChevronLeft, Camera, Save, Loader2, Lock } from 'lucide-react';
 import { getProfile, updateProfile, uploadAvatar, updateUserPassword } from '../services/profileService';
+import { useLanguage } from '../contexts/LanguageContext';
 
 const EditProfile = () => {
     const { user } = useAuth();
+    const { t } = useLanguage();
     const navigate = useNavigate();
 
     const [loading, setLoading] = useState(true);
@@ -108,7 +110,7 @@ const EditProfile = () => {
                 <button onClick={() => navigate('/profile')} className="p-2 hover:bg-gray-100 rounded-full dark:hover:bg-navy-800 dark:text-white">
                     <ChevronLeft />
                 </button>
-                <h1 className="text-2xl font-bold dark:text-white">Edit Profil</h1>
+                <h1 className="text-2xl font-bold dark:text-white">{t('edit_profile')}</h1>
             </div>
 
             <form onSubmit={handleSave} className="space-y-6 pb-12">
@@ -129,13 +131,13 @@ const EditProfile = () => {
                             <input type="file" accept="image/*" className="hidden" onChange={handleAvatarChange} />
                         </label>
                     </div>
-                    <p className="text-sm text-gray-500 mt-2 dark:text-gray-400">Klik ikon kamera untuk ganti foto</p>
+                    <p className="text-sm text-gray-500 mt-2 dark:text-gray-400">{t('change_photo')}</p>
                 </div>
 
                 {/* Info Section */}
                 <div className="bg-white dark:bg-navy-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-navy-800 space-y-4">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nama Lengkap</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('full_name')}</label>
                         <input
                             type="text"
                             value={fullName}
@@ -145,7 +147,7 @@ const EditProfile = () => {
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Username</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('username')}</label>
                         <input
                             type="text"
                             value={username}
@@ -155,7 +157,7 @@ const EditProfile = () => {
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Bio</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('bio')}</label>
                         <textarea
                             value={bio}
                             onChange={(e) => setBio(e.target.value)}
@@ -172,12 +174,12 @@ const EditProfile = () => {
                         <Lock size={18} /> Ganti Password
                     </h3>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Password Baru</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('new_password')}</label>
                         <input
                             type="password"
                             value={newPassword}
                             onChange={(e) => setNewPassword(e.target.value)}
-                            placeholder="Kosongkan jika tidak ingin mengganti"
+                            placeholder={t('new_password')}
                             className="w-full p-3 rounded-xl border border-gray-200 dark:border-navy-700 bg-gray-50 dark:bg-navy-950 dark:text-white focus:outline-none focus:ring-2 focus:ring-navy-500"
                         />
                     </div>
@@ -201,7 +203,7 @@ const EditProfile = () => {
                     className="w-full bg-navy-600 text-white py-4 rounded-2xl font-bold text-lg shadow-lg hover:bg-navy-700 active:scale-95 transition-all flex items-center justify-center gap-2"
                 >
                     {saving ? <Loader2 className="animate-spin" /> : <Save />}
-                    Simpan Perubahan
+                    {t('save_changes')}
                 </button>
             </form>
         </Layout>

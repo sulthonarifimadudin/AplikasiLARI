@@ -7,10 +7,12 @@ import { useAuth } from '../contexts/AuthContext';
 import { getProfile } from '../services/profileService';
 import { getSocialStats, followUser, unfollowUser, checkIsFollowing } from '../services/socialService';
 import { getActivitiesByUserId } from '../services/activityStorage';
+import { useLanguage } from '../contexts/LanguageContext';
 
 const PublicProfile = () => {
     const { id } = useParams();
     const { user } = useAuth();
+    const { t } = useLanguage();
     const navigate = useNavigate();
 
     const [profile, setProfile] = useState(null);
@@ -87,8 +89,8 @@ const PublicProfile = () => {
     if (!profile) return (
         <Layout>
             <div className="p-4 text-center mt-20">
-                <p>User tidak ditemukan.</p>
-                <button onClick={() => navigate(-1)} className="text-navy-600 font-bold mt-4">Kembali</button>
+                <p>{t('user_not_found')}</p>
+                <button onClick={() => navigate(-1)} className="text-navy-600 font-bold mt-4">{t('back')}</button>
             </div>
         </Layout>
     );
@@ -100,7 +102,7 @@ const PublicProfile = () => {
                 <button onClick={() => navigate(-1)} className="p-2 hover:bg-gray-100 dark:hover:bg-navy-800 rounded-full dark:text-white">
                     <ChevronLeft />
                 </button>
-                <h2 className="font-bold text-lg dark:text-white">Profile Runner</h2>
+                <h2 className="font-bold text-lg dark:text-white">{t('runner_profile')}</h2>
             </div>
 
             {/* Profile Card */}
@@ -120,15 +122,15 @@ const PublicProfile = () => {
                     <div className="flex gap-8 mb-6">
                         <div className="text-center">
                             <p className="font-bold text-lg dark:text-white">{stats.followers}</p>
-                            <p className="text-[10px] uppercase text-gray-400 font-bold">Pengikut</p>
+                            <p className="text-[10px] uppercase text-gray-400 font-bold">{t('followers')}</p>
                         </div>
                         <div className="text-center">
                             <p className="font-bold text-lg dark:text-white">{stats.following}</p>
-                            <p className="text-[10px] uppercase text-gray-400 font-bold">Mengikuti</p>
+                            <p className="text-[10px] uppercase text-gray-400 font-bold">{t('following')}</p>
                         </div>
                         <div className="text-center">
                             <p className="font-bold text-lg dark:text-white">{activities.length}</p>
-                            <p className="text-[10px] uppercase text-gray-400 font-bold">Lari</p>
+                            <p className="text-[10px] uppercase text-gray-400 font-bold">{t('activities')}</p>
                         </div>
                     </div>
 
@@ -142,16 +144,16 @@ const PublicProfile = () => {
                         `}
                     >
                         {isFollowing ? (
-                            <> <UserCheck size={16} /> Mengikuti </>
+                            <> <UserCheck size={16} /> {t('following')} </>
                         ) : (
-                            <> <UserPlus size={16} /> Ikuti Runner </>
+                            <> <UserPlus size={16} /> {t('follow_runner')} </>
                         )}
                     </button>
                 </div>
             </div>
 
             {/* Activities List */}
-            <h3 className="font-bold text-navy-900 dark:text-white mb-4 pl-1">Riwayat Lari</h3>
+            <h3 className="font-bold text-navy-900 dark:text-white mb-4 pl-1">{t('activity_history')}</h3>
             <div className="space-y-4 pb-20">
                 {activities.length > 0 ? (
                     activities.map(activity => (
@@ -159,7 +161,7 @@ const PublicProfile = () => {
                     ))
                 ) : (
                     <div className="text-center py-10 text-gray-400 text-sm">
-                        Belum ada aktivitas lari yang terekam.
+                        {t('no_activities_found')}
                     </div>
                 )}
             </div>

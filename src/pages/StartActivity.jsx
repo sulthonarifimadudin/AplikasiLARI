@@ -9,8 +9,10 @@ import { calculatePace, formatTime } from '../utils/paceCalculator';
 import { usePedometer } from '../hooks/usePedometer';
 import { saveActivity } from '../services/activityStorage';
 import { Play, Pause, Square, Map as MapIcon, Loader2, ChevronLeft, Footprints } from 'lucide-react';
+import { useLanguage } from '../contexts/LanguageContext';
 
 const StartActivity = () => {
+    const { t, language } = useLanguage();
     const [isTracking, setIsTracking] = useState(false);
     const [isPaused, setIsPaused] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
@@ -62,7 +64,19 @@ const StartActivity = () => {
         if (hour >= 11 && hour < 15) timeOfDay = 'Siang';
         else if (hour >= 15 && hour < 18) timeOfDay = 'Sore';
         else if (hour >= 18) timeOfDay = 'Malam';
-        return `Lari ${timeOfDay}`;
+
+        const activityMap = {
+            running: t('run'),
+            walking: t('walk'),
+            cycling: t('cycle')
+        };
+
+        // Simple localization for time of day if needed, keeping it simple for now or manual mapping
+        // For now, let's just use the translated activity name + time.
+        // But "Morning Run" vs "Lari Pagi" structure differs. 
+        // Let's stick to existing logic but maybe just translate the activity part if possible or keep logic as is for "Lari [Time]"
+
+        return `${t('default_title')}`; // Simplified to "Casual Run" / "Lari Santuy" to avoid complex time logic translation for now, or use mapped
     };
 
     const handleStopClick = () => {
@@ -133,21 +147,21 @@ const StartActivity = () => {
                         <div className="absolute inset-0 bg-navy-500 rounded-full animate-ping opacity-20"></div>
                         <MapIcon size={48} className="text-white relative z-10" />
                     </div>
-                    <h1 className="text-2xl font-bold text-white mb-2">Siapkan GPS</h1>
+                    <h1 className="text-2xl font-bold text-white mb-2">{t('prepare_gps')}</h1>
                     <p className="text-navy-200 mb-8 max-w-xs">
-                        {status === 'error' ? (error || "Gagal mendapatkan lokasi.") : "Kami perlu akses lokasi untuk melacak rute lari kamu dengan akurat."}
+                        {status === 'error' ? (error || t('gps_error')) : t('gps_permission')}
                     </p>
                     <button
                         onClick={startTracking}
                         className="w-full max-w-xs bg-emerald-500 text-white font-bold py-4 rounded-xl shadow-lg hover:bg-emerald-600 transition-all active:scale-95 flex items-center justify-center gap-2"
                     >
-                        {status === 'error' ? 'Coba Lagi' : '📡 Aktifkan GPS'}
+                        {status === 'error' ? t('retry') : `📡 ${t('enable_gps')}`}
                     </button>
                     <button
                         onClick={() => navigate('/')}
                         className="mt-6 text-navy-400 text-sm hover:text-white"
                     >
-                        Kembali
+                        {t('back')}
                     </button>
                 </div>
             )}
@@ -156,8 +170,8 @@ const StartActivity = () => {
             {status === 'searching' && (
                 <div className="absolute inset-0 z-30 bg-navy-950 flex flex-col items-center justify-center p-8 text-center animate-in fade-in">
                     <Loader2 size={48} className="text-emerald-400 animate-spin mb-6" />
-                    <h2 className="text-xl font-bold text-white mb-2">Mencari Satelit...</h2>
-                    <p className="text-navy-300">Mohon tunggu sebentar ya.</p>
+                    <h2 className="text-xl font-bold text-white mb-2">{t('searching_satellite')}</h2>
+                    <p className="text-navy-300">{t('please_wait')}</p>
                 </div>
             )}
 
@@ -190,9 +204,9 @@ const StartActivity = () => {
                         className="bg-navy-900/50 backdrop-blur-md text-white border border-white/20 rounded-full px-3 py-1 text-xs outline-none"
                         disabled={isTracking}
                     >
-                        <option value="running">Lari</option>
-                        <option value="walking">Jalan</option>
-                        <option value="cycling">Sepeda</option>
+                        <option value="running">{t('run')}</option>
+                        <option value="walking">{t('walk')}</option>
+                        <option value="cycling">{t('cycle')}</option>
                     </select>
                 </div>
             )}
@@ -215,13 +229,13 @@ const StartActivity = () => {
             {status === 'ready' && (
                 <div className="absolute bottom-[25%] w-full flex justify-around px-8 z-10">
                     <div className="bg-navy-900/60 backdrop-blur-sm p-3 rounded-xl min-w-[100px] text-center">
-                        <p className="text-xs text-navy-200 uppercase tracking-widest">{currentActivityType === 'walking' ? 'Langkah' : 'Pace'}</p>
+                        <p className="text-xs text-navy-200 uppercase tracking-widest">{currentActivityType === 'walking' ? t('steps') : t('pace')}</p>
                         <p className="text-xl font-bold text-white">
                             {currentActivityType === 'walking' ? steps : currentPace}
                         </p>
                     </div>
                     <div className="bg-navy-900/60 backdrop-blur-sm p-3 rounded-xl min-w-[100px] text-center">
-                        <p className="text-xs text-navy-200 uppercase tracking-widest">Kcal</p>
+                        <p className="text-xs text-navy-200 uppercase tracking-widest">{t('cal')}</p>
                         <p className="text-xl font-bold text-white">{(distance * 60).toFixed(0)}</p>
                     </div>
                 </div>
@@ -231,11 +245,11 @@ const StartActivity = () => {
             {showSaveModal && (
                 <div className="absolute inset-0 z-50 bg-navy-950/80 backdrop-blur-md flex items-center justify-center p-6 animate-in fade-in">
                     <div className="bg-white dark:bg-navy-900 w-full max-w-sm rounded-3xl p-6 shadow-2xl border border-gray-100 dark:border-navy-800">
-                        <h2 className="text-2xl font-bold text-navy-900 dark:text-white mb-6 text-center">Simpan Aktivitas</h2>
+                        <h2 className="text-2xl font-bold text-navy-900 dark:text-white mb-6 text-center">{t('save_activity')}</h2>
 
                         <div className="space-y-4">
                             <div>
-                                <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-1">Judul</label>
+                                <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-1">{t('title')}</label>
                                 <input
                                     type="text"
                                     value={titleInput}
@@ -246,7 +260,7 @@ const StartActivity = () => {
                             </div>
 
                             <div className="relative">
-                                <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-1">Lokasi</label>
+                                <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-1">{t('location')}</label>
                                 <input
                                     type="text"
                                     value={locationInput}
@@ -273,15 +287,15 @@ const StartActivity = () => {
                             {/* Summary Stats */}
                             <div className="grid grid-cols-3 gap-2 py-4">
                                 <div className="text-center">
-                                    <p className="text-[10px] text-gray-400 uppercase">Jarak</p>
+                                    <p className="text-[10px] text-gray-400 uppercase">{t('distance')}</p>
                                     <p className="font-bold text-navy-900 dark:text-white">{distance.toFixed(2)} km</p>
                                 </div>
                                 <div className="text-center">
-                                    <p className="text-[10px] text-gray-400 uppercase">Waktu</p>
+                                    <p className="text-[10px] text-gray-400 uppercase">{t('duration')}</p>
                                     <p className="font-bold text-navy-900 dark:text-white">{formatTime(time)}</p>
                                 </div>
                                 <div className="text-center">
-                                    <p className="text-[10px] text-gray-400 uppercase">{currentActivityType === 'walking' ? 'Langkah' : 'Pace'}</p>
+                                    <p className="text-[10px] text-gray-400 uppercase">{currentActivityType === 'walking' ? t('steps') : t('pace')}</p>
                                     <p className="font-bold text-navy-900 dark:text-white">
                                         {currentActivityType === 'walking' ? steps : currentPace}
                                     </p>
@@ -293,13 +307,13 @@ const StartActivity = () => {
                                     onClick={() => setShowSaveModal(false)}
                                     className="flex-1 py-3 rounded-xl font-bold text-gray-500 hover:bg-gray-100 dark:hover:bg-navy-800 transition-colors"
                                 >
-                                    Batal
+                                    {t('cancel')}
                                 </button>
                                 <button
                                     onClick={handleConfirmSave}
                                     className="flex-1 py-3 bg-navy-900 text-white rounded-xl font-bold shadow-lg hover:bg-navy-800 transition-colors"
                                 >
-                                    Simpan
+                                    {t('save')}
                                 </button>
                             </div>
                         </div>

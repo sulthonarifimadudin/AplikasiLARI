@@ -3,11 +3,13 @@ import { Home, Plus, User, BarChart2, Users } from 'lucide-react';
 import clsx from 'clsx';
 import { useAuth } from '../contexts/AuthContext';
 import { getProfile } from '../services/profileService';
+import { useLanguage } from '../contexts/LanguageContext'; // Import translation hook
 import { useEffect, useState } from 'react';
 
 const Layout = ({ children }) => {
     const location = useLocation();
     const { user } = useAuth();
+    const { t } = useLanguage();
     const [avatarUrl, setAvatarUrl] = useState(null);
 
     useEffect(() => {
@@ -56,19 +58,19 @@ const Layout = ({ children }) => {
             </main>
 
             <nav className="fixed bottom-0 w-full max-w-md bg-white dark:bg-navy-900 border-t border-gray-100 dark:border-navy-800 flex items-center justify-between px-2 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] dark:shadow-none z-20 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-2 transition-colors">
-                <NavItem to="/" icon={Home} label="Home" />
-                <NavItem to="/stats" icon={BarChart2} label="Recap" />
+                <NavItem to="/" icon={Home} label={t('home')} />
+                <NavItem to="/stats" icon={BarChart2} label={t('recap')} />
 
                 {/* Prominent Rekam Button */}
                 <div className="relative -top-6">
                     <Link to="/start" className="w-16 h-16 rounded-full bg-navy-600 hover:bg-navy-700 text-white flex flex-col items-center justify-center shadow-lg shadow-navy-600/40 border-4 border-gray-50 dark:border-navy-950 transition-all active:scale-95">
                         <Plus size={32} />
-                        <span className="text-[9px] font-bold mt-0.5">REKAM</span>
+                        <span className="text-[9px] font-bold mt-0.5">{t('record')}</span>
                     </Link>
                 </div>
 
-                <NavItem to="/social" icon={Users} label="Social" />
-                <NavItem to="/profile" icon={User} label="Profil" />
+                <NavItem to="/social" icon={Users} label={t('social')} />
+                <NavItem to="/profile" icon={User} label={t('profile')} />
             </nav>
         </div>
     );

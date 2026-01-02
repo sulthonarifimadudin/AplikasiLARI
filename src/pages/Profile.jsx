@@ -1,7 +1,8 @@
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
+import { useLanguage } from '../contexts/LanguageContext';
 import Layout from '../components/Layout';
-import { LogOut, Moon, Sun, UserCog, Loader2 } from 'lucide-react';
+import { LogOut, Moon, Sun, UserCog, Loader2, Globe } from 'lucide-react'; // Add Globe identifier
 import { useNavigate } from 'react-router-dom';
 import { getProfile } from '../services/profileService';
 import { getSocialStats } from '../services/socialService';
@@ -13,6 +14,7 @@ import { getActivitiesByUserId } from '../services/activityStorage'; // Import f
 const Profile = () => {
     const { user, signOut } = useAuth();
     const { theme, toggleTheme } = useTheme();
+    const { language, toggleLanguage, t } = useLanguage();
     const navigate = useNavigate();
 
     const [profile, setProfile] = useState(null);
@@ -72,11 +74,11 @@ const Profile = () => {
                 <div className="flex gap-6 mt-6 relative z-10 border-t border-navy-800 pt-4">
                     <div className="text-center">
                         <p className="text-xl font-bold">{stats.following}</p>
-                        <p className="text-xs text-navy-300 uppercase tracking-wider">Mengikuti</p>
+                        <p className="text-xs text-navy-300 uppercase tracking-wider">{t('following')}</p>
                     </div>
                     <div className="text-center">
                         <p className="text-xl font-bold">{stats.followers}</p>
-                        <p className="text-xs text-navy-300 uppercase tracking-wider">Pengikut</p>
+                        <p className="text-xs text-navy-300 uppercase tracking-wider">{t('followers')}</p>
                     </div>
                 </div>
             </div>
@@ -88,14 +90,14 @@ const Profile = () => {
                     className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all flex items-center justify-center gap-2
                     ${activeTab === 'menu' ? 'bg-white dark:bg-navy-700 text-navy-900 dark:text-white shadow-sm' : 'text-gray-400 dark:text-gray-500'}`}
                 >
-                    <List size={16} /> Profil Saya
+                    <List size={16} /> {t('my_profile')}
                 </button>
                 <button
                     onClick={() => setActiveTab('activities')}
                     className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all flex items-center justify-center gap-2
                     ${activeTab === 'activities' ? 'bg-white dark:bg-navy-700 text-navy-900 dark:text-white shadow-sm' : 'text-gray-400 dark:text-gray-500'}`}
                 >
-                    <Activity size={16} /> Aktivitas Saya
+                    <Activity size={16} /> {t('my_activities')}
                 </button>
             </div>
 
@@ -109,7 +111,7 @@ const Profile = () => {
                             ))
                         ) : (
                             <div className="text-center py-8 bg-white dark:bg-navy-900 rounded-xl border border-dashed border-gray-300 dark:border-navy-700">
-                                <p className="text-gray-400 text-sm">Belum ada aktivitas. Yuk lari!</p>
+                                <p className="text-gray-400 text-sm">{t('no_activities')}</p>
                             </div>
                         )}
                     </div>
@@ -125,11 +127,24 @@ const Profile = () => {
                     >
                         <UserCog size={20} className="text-navy-600 dark:text-navy-300" />
                         <div>
-                            <span className="font-bold block text-sm">Edit Profil</span>
-                            <span className="text-xs text-gray-500 dark:text-gray-400">Ganti foto, nama, bio, & password</span>
+                            <span className="font-bold block text-sm">{t('edit_profile')}</span>
+                            <span className="text-xs text-gray-500 dark:text-gray-400">{t('edit_profile_desc')}</span>
                         </div>
                         <div className="ml-auto text-gray-400">
                             &rarr;
+                        </div>
+                    </button>
+
+                    <button
+                        onClick={toggleLanguage}
+                        className="w-full flex items-center justify-between p-4 text-navy-900 dark:text-white hover:bg-gray-50 dark:hover:bg-navy-800 transition-colors"
+                    >
+                        <div className="flex items-center gap-3">
+                            <Globe size={20} />
+                            <span className="font-medium">{t('language')}</span>
+                        </div>
+                        <div className="w-20 pl-4 py-1.5 flex justify-end text-sm font-bold text-navy-500">
+                            {language === 'id' ? 'ID 🇮🇩' : 'EN 🇬🇧'}
                         </div>
                     </button>
 
@@ -139,7 +154,7 @@ const Profile = () => {
                     >
                         <div className="flex items-center gap-3">
                             {theme === 'dark' ? <Moon size={20} /> : <Sun size={20} />}
-                            <span className="font-medium">Mode {theme === 'dark' ? 'Gelap' : 'Terang'}</span>
+                            <span className="font-medium">{theme === 'dark' ? t('dark_mode') : t('light_mode')}</span>
                         </div>
                         <div className={`w-10 h-6 rounded-full p-1 transition-colors ${theme === 'dark' ? 'bg-navy-500' : 'bg-gray-300'}`}>
                             <div className={`w-4 h-4 rounded-full bg-white transition-transform ${theme === 'dark' ? 'translate-x-4' : ''}`} />
@@ -151,7 +166,7 @@ const Profile = () => {
                         className="w-full flex items-center gap-3 p-4 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors text-left"
                     >
                         <LogOut size={20} />
-                        <span className="font-medium">Keluar Akun</span>
+                        <span className="font-medium">{t('logout')}</span>
                     </button>
                 </div>
             )}

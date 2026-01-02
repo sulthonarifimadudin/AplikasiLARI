@@ -3,8 +3,10 @@ import ActivityCard from '../components/ActivityCard';
 import { getActivities } from '../services/activityStorage';
 import { useEffect, useState } from 'react';
 import { TrendingUp, Loader2 } from 'lucide-react';
+import { useLanguage } from '../contexts/LanguageContext';
 
 const Dashboard = () => {
+    const { t } = useLanguage();
     const [activities, setActivities] = useState([]);
     const [totalDistance, setTotalDistance] = useState(0);
     const [loading, setLoading] = useState(true);
@@ -38,13 +40,13 @@ const Dashboard = () => {
             <div className="sticky top-0 z-40 -mx-4 -mt-6 px-4 pt-2 pb-4 mb-4 transition-all">
                 <div className="inline-block bg-navy-950/90 backdrop-blur-sm rounded-xl px-4 py-2 mb-2 shadow-lg">
                     <h2 className="text-lg font-bold text-white leading-none">
-                        Minggu Ini
+                        {t('this_week')}
                     </h2>
                 </div>
                 <div className="bg-gradient-to-br from-navy-800 to-navy-950 rounded-2xl p-6 text-white shadow-lg shadow-navy-900/20">
                     <div className="flex justify-between items-start mb-4">
                         <div>
-                            <p className="text-navy-100 font-medium text-sm">Total Jarak</p>
+                            <p className="text-navy-100 font-medium text-sm">{t('total_distance')}</p>
                             <h3 className="text-4xl font-bold tracking-tight">{totalDistance.toFixed(1)} <span className="text-lg font-normal text-navy-200">km</span></h3>
                         </div>
                         <div className="bg-white/10 p-2 rounded-lg backdrop-blur-sm">
@@ -55,8 +57,8 @@ const Dashboard = () => {
             </div>
 
             <div className="mb-4 flex justify-between items-end">
-                <h3 className="font-bold text-navy-900 dark:text-white text-lg">Aktivitas Terakhir</h3>
-                <span className="text-xs text-navy-600 dark:text-navy-400 font-medium cursor-pointer hover:underline">Lihat Semua</span>
+                <h3 className="font-bold text-navy-900 dark:text-white text-lg">{t('last_activity')}</h3>
+                <span className="text-xs text-navy-600 dark:text-navy-400 font-medium cursor-pointer hover:underline">{t('view_all')}</span>
             </div>
 
             <div className="space-y-4">
@@ -66,8 +68,7 @@ const Dashboard = () => {
                     </div>
                 ) : activities.length === 0 ? (
                     <div className="text-center py-12 bg-white dark:bg-navy-900 rounded-xl border border-dashed border-gray-300 dark:border-navy-700">
-                        <p className="text-gray-400">Belum ada aktivitas.</p>
-                        <p className="text-sm text-gray-400 mt-1">Ayo mulai bergerak!</p>
+                        <p className="text-gray-400">{t('no_activities')}</p>
                     </div>
                 ) : (
                     activities.map(activity => (

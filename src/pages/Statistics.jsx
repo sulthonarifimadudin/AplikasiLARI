@@ -5,15 +5,17 @@ import { filterActivities, getChartData, getActiveDays } from '../utils/statsHel
 import { Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, addMonths, subMonths, isSameDay, isSameMonth } from 'date-fns';
-import { id } from 'date-fns/locale';
+import { id as idLocale, enUS as enLocale } from 'date-fns/locale';
 import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 import { useTheme } from '../contexts/ThemeContext';
+import { useLanguage } from '../contexts/LanguageContext';
 
 const Statistics = () => {
     const { theme } = useTheme();
+    const { t, language } = useLanguage();
     const [activities, setActivities] = useState([]);
     const [loading, setLoading] = useState(true);
     const [viewType, setViewType] = useState('week'); // week, month, year
@@ -58,17 +60,17 @@ const Statistics = () => {
 
     return (
         <Layout>
-            <h2 className="text-2xl font-bold text-navy-900 dark:text-white mb-6">Recap & Progress</h2>
+            <h2 className="text-2xl font-bold text-navy-900 dark:text-white mb-6">{t('statistics')}</h2>
 
             {/* Filter Tabs */}
             <div className="flex bg-gray-100 dark:bg-navy-900 p-1 rounded-xl mb-6">
-                {['week', 'month', 'year'].map(t => (
+                {['week', 'month', 'year'].map(period => (
                     <button
-                        key={t}
-                        onClick={() => setViewType(t)}
-                        className={`flex-1 py-2 text-sm font-semibold rounded-lg transition-all ${viewType === t ? 'bg-white dark:bg-navy-700 text-navy-900 dark:text-white shadow-sm' : 'text-gray-400 dark:text-gray-500'}`}
+                        key={period}
+                        onClick={() => setViewType(period)}
+                        className={`flex-1 py-2 text-sm font-semibold rounded-lg transition-all ${viewType === period ? 'bg-white dark:bg-navy-700 text-navy-900 dark:text-white shadow-sm' : 'text-gray-400 dark:text-gray-500'}`}
                     >
-                        {t === 'week' ? 'Minggu' : t === 'month' ? 'Bulan' : 'Tahun'}
+                        {period === 'week' ? t('this_week') : period === 'month' ? t('this_month') : t('this_year')}
                     </button>
                 ))}
             </div>
@@ -76,22 +78,22 @@ const Statistics = () => {
             {/* Summary Cards */}
             <div className="grid grid-cols-3 gap-3 mb-8">
                 <div className="bg-navy-50 dark:bg-navy-900 p-3 rounded-xl border border-navy-100 dark:border-navy-800 text-center">
-                    <p className="text-xs text-navy-400 dark:text-navy-300 uppercase font-bold">Jarak</p>
+                    <p className="text-xs text-navy-400 dark:text-navy-300 uppercase font-bold">{t('distance')}</p>
                     <p className="text-lg font-bold text-navy-900 dark:text-white">{totalDist.toFixed(1)}k</p>
                 </div>
                 <div className="bg-navy-50 dark:bg-navy-900 p-3 rounded-xl border border-navy-100 dark:border-navy-800 text-center">
-                    <p className="text-xs text-navy-400 dark:text-navy-300 uppercase font-bold">Jam</p>
+                    <p className="text-xs text-navy-400 dark:text-navy-300 uppercase font-bold">{t('duration')}</p>
                     <p className="text-lg font-bold text-navy-900 dark:text-white">{totalTime.toFixed(1)}h</p>
                 </div>
                 <div className="bg-navy-50 dark:bg-navy-900 p-3 rounded-xl border border-navy-100 dark:border-navy-800 text-center">
-                    <p className="text-xs text-navy-400 dark:text-navy-300 uppercase font-bold">Kalori</p>
+                    <p className="text-xs text-navy-400 dark:text-navy-300 uppercase font-bold">{t('cal')}</p>
                     <p className="text-lg font-bold text-navy-900 dark:text-white">{totalKcal.toFixed(0)}</p>
                 </div>
             </div>
 
             {/* Chart Section */}
             <div className="mb-8">
-                <h3 className="font-bold text-navy-900 dark:text-white mb-3">Grafik Aktivitas</h3>
+                <h3 className="font-bold text-navy-900 dark:text-white mb-3">{t('statistics')}</h3>
                 <div className="h-48 w-full p-2 bg-white dark:bg-navy-900 rounded-xl border border-gray-100 dark:border-navy-800">
                     <Bar
                         data={chartData}
@@ -118,10 +120,10 @@ const Statistics = () => {
             {/* Calendar Section */}
             <div className="bg-white dark:bg-navy-900 border border-gray-100 dark:border-navy-800 rounded-2xl p-4 shadow-sm">
                 <div className="flex justify-between items-center mb-4">
-                    <h3 className="font-bold text-navy-900 dark:text-white">Kalender Aktif</h3>
+                    <h3 className="font-bold text-navy-900 dark:text-white">Active Calendar</h3>
                     <div className="flex gap-2 text-navy-900 dark:text-gray-200">
                         <button onClick={prevMonth} className="p-1 hover:bg-gray-100 dark:hover:bg-navy-800 rounded"><ChevronLeft size={16} /></button>
-                        <span className="text-sm font-medium">{format(calendarDate, 'MMMM yyyy', { locale: id })}</span>
+                        <span className="text-sm font-medium">{format(calendarDate, 'MMMM yyyy', { locale: language === 'id' ? idLocale : enLocale })}</span>
                         <button onClick={nextMonth} className="p-1 hover:bg-gray-100 dark:hover:bg-navy-800 rounded"><ChevronRight size={16} /></button>
                     </div>
                 </div>

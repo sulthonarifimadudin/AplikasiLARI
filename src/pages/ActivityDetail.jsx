@@ -11,6 +11,7 @@ import { Share2, ChevronLeft, Download, Loader2, Camera, User, Image as ImageIco
 import html2canvas from 'html2canvas';
 import { supabase } from '../lib/supabaseClient';
 import { useAuth } from '../contexts/AuthContext';
+import { useLanguage } from '../contexts/LanguageContext';
 import { Capacitor } from '@capacitor/core';
 import { Share } from '@capacitor/share';
 import { Filesystem, Directory } from '@capacitor/filesystem';
@@ -19,6 +20,7 @@ const ActivityDetail = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const { user } = useAuth();
+    const { t, language } = useLanguage(); // Add language hook
 
     const [activity, setActivity] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -353,7 +355,7 @@ const ActivityDetail = () => {
                                         <div className="flex items-center gap-1 group cursor-pointer" onClick={() => { setIsEditingLocation(true); setLocationInput(''); }}>
                                             <MapPin size={12} className="text-orange-500 drop-shadow-md" />
                                             <p className="text-white/80 font-bold text-xs drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] hover:text-orange-400 transition-colors">
-                                                {activity.location || 'Tambah Lokasi'}
+                                                {activity.location || t('location')}
                                             </p>
                                         </div>
                                     )}
@@ -361,7 +363,7 @@ const ActivityDetail = () => {
                             </div>
 
                             <p className="text-white/80 font-bold text-xs drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] mt-1">
-                                {new Date(activity.startTime).toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'short' })}
+                                {new Date(activity.startTime).toLocaleDateString(language === 'id' ? 'id-ID' : 'en-US', { weekday: 'long', day: 'numeric', month: 'short' })}
                             </p>
                         </div>
                         <div className="text-white font-bold drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)] text-right text-[10px] bg-black/30 backdrop-blur-md px-3 py-1 rounded-full border border-white/20 uppercase tracking-widest">
@@ -380,19 +382,19 @@ const ActivityDetail = () => {
 
                         <div className="flex gap-8 border-t border-white/30 pt-4">
                             <div>
-                                <p className="text-white/90 font-bold text-[10px] uppercase tracking-widest mb-0.5 drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">WAKTU</p>
+                                <p className="text-white/90 font-bold text-lg uppercase tracking-widest mb-0.5 drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">{t('duration')}</p>
                                 <p className="text-2xl font-black text-white italic tracking-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">{formatTime(activity.duration)}</p>
                             </div>
                             <div>
-                                <p className="text-white/90 font-bold text-[10px] uppercase tracking-widest mb-0.5 drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
-                                    {activity.type === 'walking' ? 'LANGKAH' : 'PACE'}
+                                <p className="text-white/90 font-bold text-lg uppercase tracking-widest mb-0.5 drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
+                                    {activity.type === 'walking' ? t('steps') : t('pace')}
                                 </p>
                                 <p className="text-2xl font-black text-white italic tracking-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
                                     {activity.type === 'walking' ? activity.steps : activity.pace}
                                 </p>
                             </div>
                             <div>
-                                <p className="text-white/90 font-bold text-[10px] uppercase tracking-widest mb-0.5 drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">KCAL</p>
+                                <p className="text-white/90 font-bold text-lg uppercase tracking-widest mb-0.5 drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">{t('cal')}</p>
                                 <p className="text-2xl font-black text-white italic tracking-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">{(activity.distance * 60).toFixed(0)}</p>
                             </div>
                         </div>
@@ -438,7 +440,7 @@ const ActivityDetail = () => {
                                         <p className="text-white/90 font-bold text-lg drop-shadow-md">{activity.location}</p>
                                     </div>
                                 )}
-                                <p className="text-white/80 font-bold text-lg drop-shadow-md">{new Date(activity.startTime).toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'short' })}</p>
+                                <p className="text-white/80 font-bold text-lg drop-shadow-md">{new Date(activity.startTime).toLocaleDateString(language === 'id' ? 'id-ID' : 'en-US', { weekday: 'long', day: 'numeric', month: 'short' })}</p>
                             </div>
                         </div>
 
@@ -453,19 +455,19 @@ const ActivityDetail = () => {
 
                             <div className="flex gap-16 items-end border-t-4 border-white/50 pt-6">
                                 <div>
-                                    <p className="text-white/90 font-bold text-sm uppercase tracking-widest mb-1 drop-shadow-md">WAKTU</p>
+                                    <p className="text-white/90 font-bold text-sm uppercase tracking-widest mb-1 drop-shadow-md">{t('duration')}</p>
                                     <p className="text-4xl font-black text-white italic tracking-tight drop-shadow-lg">{formatTime(activity.duration)}</p>
                                 </div>
                                 <div>
                                     <p className="text-white/90 font-bold text-sm uppercase tracking-widest mb-1 drop-shadow-md">
-                                        {activity.type === 'walking' ? 'LANGKAH' : 'PACE'}
+                                        {activity.type === 'walking' ? t('steps') : t('pace')}
                                     </p>
                                     <p className="text-4xl font-black text-white italic tracking-tight drop-shadow-lg">
                                         {activity.type === 'walking' ? activity.steps : activity.pace}
                                     </p>
                                 </div>
                                 <div>
-                                    <p className="text-white/90 font-bold text-sm uppercase tracking-widest mb-1 drop-shadow-md">KCAL</p>
+                                    <p className="text-white/90 font-bold text-sm uppercase tracking-widest mb-1 drop-shadow-md">{t('cal')}</p>
                                     <p className="text-4xl font-black text-white italic tracking-tight drop-shadow-lg">{(activity.distance * 60).toFixed(0)}</p>
                                 </div>
                             </div>
@@ -477,11 +479,11 @@ const ActivityDetail = () => {
             <div className="flex flex-col gap-3 mt-4">
                 <button onClick={handleStandardExport} disabled={isExporting} className="w-full bg-navy-900 text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-transform hover:bg-navy-800">
                     <Download size={20} />
-                    Simpan Gambar Full
+                    {t('save')} (Full)
                 </button>
                 <button onClick={handleTransparentExport} disabled={isExporting} className="w-full bg-orange-600 text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-transform hover:bg-orange-700">
                     <ImageIcon size={20} />
-                    Simpan Overlay (Transparan)
+                    {t('save')} (Overlay / Transparent)
                 </button>
             </div>
         </Layout>

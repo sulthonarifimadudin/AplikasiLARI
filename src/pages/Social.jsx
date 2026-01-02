@@ -4,9 +4,11 @@ import Layout from '../components/Layout';
 import { useAuth } from '../contexts/AuthContext';
 import { getLeaderboard, searchUsers, followUser, unfollowUser, checkIsFollowing } from '../services/socialService';
 import { UserPlus, UserCheck, Trophy, Search, Users, Loader2 } from 'lucide-react';
+import { useLanguage } from '../contexts/LanguageContext';
 
 const Social = () => {
     const { user } = useAuth();
+    const { t } = useLanguage();
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState('leaderboard'); // 'feed', 'explore', 'leaderboard'
     const [leaderboard, setLeaderboard] = useState([]);
@@ -62,7 +64,7 @@ const Social = () => {
 
     return (
         <Layout>
-            <h2 className="text-2xl font-bold text-navy-900 dark:text-white mb-6">Social</h2>
+            <h2 className="text-2xl font-bold text-navy-900 dark:text-white mb-6">{t('social')}</h2>
 
             {/* Tabs */}
             <div className="flex bg-gray-100 dark:bg-navy-900 p-1 rounded-xl mb-6">
@@ -71,14 +73,14 @@ const Social = () => {
                     className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all flex items-center justify-center gap-2
                     ${activeTab === 'leaderboard' ? 'bg-white dark:bg-navy-700 text-navy-900 dark:text-white shadow-sm' : 'text-gray-400 dark:text-gray-500'}`}
                 >
-                    <Trophy size={16} /> Klasemen
+                    <Trophy size={16} /> {t('leaderboard')}
                 </button>
                 <button
                     onClick={() => setActiveTab('explore')}
                     className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all flex items-center justify-center gap-2
                     ${activeTab === 'explore' ? 'bg-white dark:bg-navy-700 text-navy-900 dark:text-white shadow-sm' : 'text-gray-400 dark:text-gray-500'}`}
                 >
-                    <Search size={16} /> Cari Teman
+                    <Search size={16} /> {t('find_friends')}
                 </button>
             </div>
 
@@ -127,7 +129,7 @@ const Social = () => {
                                 type="text"
                                 value={exploreQuery}
                                 onChange={(e) => setExploreQuery(e.target.value)}
-                                placeholder="Cari runnner..."
+                                placeholder={t('search_placeholder')}
                                 className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 dark:border-navy-700 bg-white dark:bg-navy-900 text-navy-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-navy-500"
                             />
                         </div>
@@ -148,15 +150,18 @@ const Social = () => {
                                         </div>
                                     </div>
                                     <button
-                                        onClick={() => handleToggleFollow(u.id)}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleToggleFollow(u.id);
+                                        }}
                                         className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all flex items-center gap-1 ${followingStatus[u.id] ? 'bg-gray-100 dark:bg-navy-800 text-gray-500' : 'bg-navy-600 text-white'}`}
                                     >
                                         {followingStatus[u.id] ? <UserCheck size={12} /> : <UserPlus size={12} />}
-                                        {followingStatus[u.id] ? 'Mengikuti' : 'Ikuti'}
+                                        {followingStatus[u.id] ? t('following') : t('follow')}
                                     </button>
                                 </div>
                             ))}
-                            {exploreQuery.length < 3 && <p className="text-center text-gray-400 text-sm mt-8">Ketik minimal 3 huruf untuk mencari teman.</p>}
+                            {exploreQuery.length < 3 && <p className="text-center text-gray-400 text-sm mt-8">{t('search_hint')}</p>}
                         </div>
                     </div>
                 )}
