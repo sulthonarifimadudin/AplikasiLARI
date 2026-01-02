@@ -35,9 +35,13 @@ export const saveActivity = async (activity) => {
 
 export const getActivities = async () => {
     try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return [];
+
         const { data, error } = await supabase
             .from('activities')
             .select('*')
+            .eq('user_id', user.id)
             .order('start_time', { ascending: false });
 
         if (error) throw error;
