@@ -38,7 +38,7 @@ const CoachChat = () => {
         dragStartPos.current = { x: e.clientX, y: e.clientY };
         buttonStartPos.current = { x: btn.left, y: btn.top };
 
-        // Attach listeners to window to track drag even if cursor leaves button
+        // Attach listeners to window
         window.addEventListener('pointermove', handlePointerMove);
         window.addEventListener('pointerup', handlePointerUp);
     };
@@ -71,13 +71,28 @@ const CoachChat = () => {
         window.removeEventListener('pointermove', handlePointerMove);
         window.removeEventListener('pointerup', handlePointerUp);
 
-        // If not dragging, treat as click
-        if (!isDragging) {
-            // Logic handled in onClick, but we can double check here if needed.
-            // Actually, we'll let existing onClick handle toggle if !isDragging
+        if (isDragging) {
+            // MAGNETIC SNAP LOGIC
+            // Snap to nearest side (Left or Right)
+            const screenWidth = window.innerWidth;
+            const buttonWidth = 60;
+            const currentX = position?.x || 0;
+            const midpoint = screenWidth / 2;
+
+            let snapX;
+            if (currentX + (buttonWidth / 2) < midpoint) {
+                snapX = 16; // Snap Left
+            } else {
+                snapX = screenWidth - buttonWidth - 16; // Snap Right
+            }
+
+            // Keep Y position, but clamped safely
+            const maxY = window.innerHeight - 80;
+            const snapY = Math.max(80, Math.min(position?.y || 0, maxY));
+
+            setPosition({ x: snapX, y: snapY });
         }
 
-        // Reset drag flag after a short delay to prevent onClick triggering immediately after drag
         setTimeout(() => setIsDragging(false), 50);
     };
 
@@ -210,10 +225,14 @@ const CoachChat = () => {
                 <button
                     onPointerDown={handlePointerDown}
                     onClick={handleClick}
-                    style={position ? { bottom: 'auto', right: 'auto', left: position.x, top: position.y } : {}}
-                    className={`fixed z-[50] w-14 h-14 bg-gradient-to-tr from-navy-600 to-indigo-500 text-white rounded-full shadow-lg shadow-navy-600/30 flex items-center justify-center hover:scale-105 active:scale-95 transition-transform touch-none border-4 border-white dark:border-navy-950
+                    style={{
+                        ...(position ? { bottom: 'auto', right: 'auto', left: position.x, top: position.y } : {}),
+                        touchAction: 'none',
+                        transition: isDragging ? 'none' : 'all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)' // Magnet snap animation
+                    }}
+                    className={`fixed z-[50] w-14 h-14 bg-gradient-to-tr from-navy-600 to-indigo-500 text-white rounded-full shadow-lg shadow-navy-600/30 flex items-center justify-center active:scale-95 border-4 border-white dark:border-navy-950
                         ${!position ? 'bottom-[5.5rem] right-4' : ''} 
-                    `} // Adjusted default bottom to avoid navbar overlap if fixed
+                    `}
                 >
                     <Sparkles size={28} />
                 </button>
