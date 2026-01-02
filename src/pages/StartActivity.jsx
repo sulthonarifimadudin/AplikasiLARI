@@ -6,8 +6,9 @@ import { useGeolocation } from '../hooks/useGeolocation';
 import { useTimer } from '../hooks/useTimer';
 import { haversineDistance } from '../utils/haversine';
 import { calculatePace, formatTime } from '../utils/paceCalculator';
+import { usePedometer } from '../hooks/usePedometer';
 import { saveActivity } from '../services/activityStorage';
-import { Play, Pause, Square, Map as MapIcon, Loader2, ChevronLeft } from 'lucide-react';
+import { Play, Pause, Square, Map as MapIcon, Loader2, ChevronLeft, Footprints } from 'lucide-react';
 
 const StartActivity = () => {
     const [isTracking, setIsTracking] = useState(false);
@@ -26,6 +27,7 @@ const StartActivity = () => {
     // GPS Logic: Always track location (for display), but only record when isTracking && !isPaused
     const isRecording = isTracking && !isPaused;
     const { location, error, routePath, setRoutePath, status, startTracking } = useGeolocation(isRecording);
+    const { steps, resetSteps } = usePedometer(isRecording);
 
     const { time, resetTimer } = useTimer(isRecording);
     const navigate = useNavigate();
@@ -106,6 +108,7 @@ const StartActivity = () => {
             type: currentActivityType,
             title: titleInput,
             location: locationInput,
+            steps: currentActivityType === 'walking' ? steps : 0, // Save steps only for walking
         };
 
         const saved = await saveActivity(activityData);
@@ -212,8 +215,10 @@ const StartActivity = () => {
             {status === 'ready' && (
                 <div className="absolute bottom-[25%] w-full flex justify-around px-8 z-10">
                     <div className="bg-navy-900/60 backdrop-blur-sm p-3 rounded-xl min-w-[100px] text-center">
-                        <p className="text-xs text-navy-200 uppercase tracking-widest">Pace</p>
-                        <p className="text-xl font-bold text-white">{currentPace}</p>
+                        <p className="text-xs text-navy-200 uppercase tracking-widest">{currentActivityType === 'walking' ? 'Langkah' : 'Pace'}</p>
+                        <p className="text-xl font-bold text-white">
+                            {currentActivityType === 'walking' ? steps : currentPace}
+                        </p>
                     </div>
                     <div className="bg-navy-900/60 backdrop-blur-sm p-3 rounded-xl min-w-[100px] text-center">
                         <p className="text-xs text-navy-200 uppercase tracking-widest">Kcal</p>
@@ -276,8 +281,10 @@ const StartActivity = () => {
                                     <p className="font-bold text-navy-900 dark:text-white">{formatTime(time)}</p>
                                 </div>
                                 <div className="text-center">
-                                    <p className="text-[10px] text-gray-400 uppercase">Pace</p>
-                                    <p className="font-bold text-navy-900 dark:text-white">{currentPace}</p>
+                                    <p className="text-[10px] text-gray-400 uppercase">{currentActivityType === 'walking' ? 'Langkah' : 'Pace'}</p>
+                                    <p className="font-bold text-navy-900 dark:text-white">
+                                        {currentActivityType === 'walking' ? steps : currentPace}
+                                    </p>
                                 </div>
                             </div>
 

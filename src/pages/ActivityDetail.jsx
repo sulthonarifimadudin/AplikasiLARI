@@ -384,8 +384,12 @@ const ActivityDetail = () => {
                                 <p className="text-2xl font-black text-white italic tracking-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">{formatTime(activity.duration)}</p>
                             </div>
                             <div>
-                                <p className="text-white/90 font-bold text-[10px] uppercase tracking-widest mb-0.5 drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">PACE</p>
-                                <p className="text-2xl font-black text-white italic tracking-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">{activity.pace}</p>
+                                <p className="text-white/90 font-bold text-[10px] uppercase tracking-widest mb-0.5 drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
+                                    {activity.type === 'walking' ? 'LANGKAH' : 'PACE'}
+                                </p>
+                                <p className="text-2xl font-black text-white italic tracking-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+                                    {activity.type === 'walking' ? activity.steps : activity.pace}
+                                </p>
                             </div>
                             <div>
                                 <p className="text-white/90 font-bold text-[10px] uppercase tracking-widest mb-0.5 drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">KCAL</p>
@@ -453,8 +457,12 @@ const ActivityDetail = () => {
                                     <p className="text-4xl font-black text-white italic tracking-tight drop-shadow-lg">{formatTime(activity.duration)}</p>
                                 </div>
                                 <div>
-                                    <p className="text-white/90 font-bold text-sm uppercase tracking-widest mb-1 drop-shadow-md">PACE</p>
-                                    <p className="text-4xl font-black text-white italic tracking-tight drop-shadow-lg">{activity.pace}</p>
+                                    <p className="text-white/90 font-bold text-sm uppercase tracking-widest mb-1 drop-shadow-md">
+                                        {activity.type === 'walking' ? 'LANGKAH' : 'PACE'}
+                                    </p>
+                                    <p className="text-4xl font-black text-white italic tracking-tight drop-shadow-lg">
+                                        {activity.type === 'walking' ? activity.steps : activity.pace}
+                                    </p>
                                 </div>
                                 <div>
                                     <p className="text-white/90 font-bold text-sm uppercase tracking-widest mb-1 drop-shadow-md">KCAL</p>

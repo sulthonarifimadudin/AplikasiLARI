@@ -13,6 +13,7 @@ export const saveActivity = async (activity) => {
             pace: activity.pace,
             title: activity.title || getDefaultTitle(activity.type, new Date(activity.startTime)),
             location: activity.location, // Add location
+            steps: activity.steps || 0, // Add steps
             route_path: activity.routePath, // JSONB supports objects/arrays
             start_time: new Date(activity.startTime).toISOString(),
         };
@@ -72,7 +73,9 @@ const transformActivity = (record) => ({
     location: record.location || '', // Handle null location
     distance: record.distance,
     duration: record.duration,
+    duration: record.duration,
     pace: record.pace,
+    steps: record.steps || 0,
     routePath: record.route_path,
     startTime: record.start_time,
     createdAt: record.created_at,
@@ -136,5 +139,22 @@ export const deleteActivity = async (id) => {
     } catch (error) {
         console.error("Gagal menghapus aktivitas:", error);
         return false;
+    }
+};
+
+// NEW: Fetch activities for a specific user (Public Profile)
+export const getActivitiesByUserId = async (userId) => {
+    try {
+        const { data, error } = await supabase
+            .from('activities')
+            .select('*')
+            .eq('user_id', userId)
+            .order('start_time', { ascending: false });
+
+        if (error) throw error;
+        return data.map(transformActivity);
+    } catch (error) {
+        console.error(`Error fetching activities for user ${userId}:`, error);
+        return [];
     }
 };

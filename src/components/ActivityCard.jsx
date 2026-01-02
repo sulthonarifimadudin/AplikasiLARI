@@ -1,9 +1,48 @@
 import { useNavigate } from 'react-router-dom';
 import { formatTime } from '../utils/paceCalculator';
 import MapView from './MapView';
+import { Heart, MessageCircle } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { useAuth } from '../contexts/AuthContext';
+import { toggleLike, getLikeStatus } from '../services/socialService';
+import CommentSheet from './CommentSheet';
 
 const ActivityCard = ({ activity }) => {
     const navigate = useNavigate();
+    const { user } = useAuth();
+    const [likes, setLikes] = useState(0);
+    const [isLiked, setIsLiked] = useState(false);
+    const [showComments, setShowComments] = useState(false);
+
+    useEffect(() => {
+        const fetchLikes = async () => {
+            const status = await getLikeStatus(activity.id, user?.id);
+            setLikes(status.count);
+            setIsLiked(status.isLiked);
+        };
+        fetchLikes();
+    }, [activity.id, user?.id]);
+
+    const handleLike = async (e) => {
+        e.stopPropagation();
+        if (!user) return;
+
+        // Optimistic
+        setIsLiked(!isLiked);
+        setLikes(prev => isLiked ? prev - 1 : prev + 1);
+
+        const result = await toggleLike(activity.id, user.id);
+        if (result === null) {
+            // Revert on error
+            setIsLiked(isLiked);
+            setLikes(prev => isLiked ? prev + 1 : prev - 1);
+        }
+    };
+
+    const handleCommentClick = (e) => {
+        e.stopPropagation();
+        setShowComments(true);
+    };
 
     return (
         <div
@@ -65,10 +104,34 @@ const ActivityCard = ({ activity }) => {
                     <p className="text-xl font-black text-navy-900 dark:text-white">{formatTime(activity.duration)}</p>
                 </div>
                 <div className="pl-4">
-                    <p className="text-[10px] uppercase tracking-wider text-gray-400 dark:text-gray-500 font-bold">Pace</p>
-                    <p className="text-xl font-black text-navy-900 dark:text-white">{activity.pace}</p>
+                    <p className="text-[10px] uppercase tracking-wider text-gray-400 dark:text-gray-500 font-bold">
+                        {activity.type === 'walking' ? 'Langkah' : 'Pace'}
+                    </p>
+                    <p className="text-xl font-black text-navy-900 dark:text-white">
+                        {activity.type === 'walking' ? activity.steps : activity.pace}
+                    </p>
                 </div>
             </div>
+
+            {/* Interaction Bar */}
+            <div className="px-5 pb-4 pt-0 flex items-center gap-4">
+                <button
+                    onClick={handleLike}
+                    className={`flex items-center gap-1.5 text-sm font-bold transition-colors ${isLiked ? 'text-red-500' : 'text-gray-400 dark:text-gray-500 hover:text-navy-600'}`}
+                >
+                    <Heart size={20} className={isLiked ? 'fill-current' : ''} />
+                    <span>{likes > 0 ? likes : ''}</span>
+                </button>
+                <button
+                    onClick={handleCommentClick}
+                    className="flex items-center gap-1.5 text-sm font-bold text-gray-400 dark:text-gray-500 hover:text-navy-600 transition-colors"
+                >
+                    <MessageCircle size={20} />
+                    <span>Komentar</span>
+                </button>
+            </div>
+
+            {showComments && <CommentSheet activityId={activity.id} onClose={(e) => { e?.stopPropagation(); setShowComments(false); }} />}
         </div>
     );
 };

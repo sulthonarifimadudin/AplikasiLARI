@@ -10,7 +10,10 @@ import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
+import { useTheme } from '../contexts/ThemeContext';
+
 const Statistics = () => {
+    const { theme } = useTheme();
     const [activities, setActivities] = useState([]);
     const [loading, setLoading] = useState(true);
     const [viewType, setViewType] = useState('week'); // week, month, year
@@ -55,15 +58,15 @@ const Statistics = () => {
 
     return (
         <Layout>
-            <h2 className="text-2xl font-bold text-navy-900 mb-6">Recap & Progress</h2>
+            <h2 className="text-2xl font-bold text-navy-900 dark:text-white mb-6">Recap & Progress</h2>
 
             {/* Filter Tabs */}
-            <div className="flex bg-gray-100 p-1 rounded-xl mb-6">
+            <div className="flex bg-gray-100 dark:bg-navy-900 p-1 rounded-xl mb-6">
                 {['week', 'month', 'year'].map(t => (
                     <button
                         key={t}
                         onClick={() => setViewType(t)}
-                        className={`flex-1 py-2 text-sm font-semibold rounded-lg transition-all ${viewType === t ? 'bg-white text-navy-900 shadow-sm' : 'text-gray-400'}`}
+                        className={`flex-1 py-2 text-sm font-semibold rounded-lg transition-all ${viewType === t ? 'bg-white dark:bg-navy-700 text-navy-900 dark:text-white shadow-sm' : 'text-gray-400 dark:text-gray-500'}`}
                     >
                         {t === 'week' ? 'Minggu' : t === 'month' ? 'Bulan' : 'Tahun'}
                     </button>
@@ -72,24 +75,24 @@ const Statistics = () => {
 
             {/* Summary Cards */}
             <div className="grid grid-cols-3 gap-3 mb-8">
-                <div className="bg-navy-50 p-3 rounded-xl border border-navy-100 text-center">
-                    <p className="text-xs text-navy-400 uppercase font-bold">Jarak</p>
-                    <p className="text-lg font-bold text-navy-900">{totalDist.toFixed(1)}k</p>
+                <div className="bg-navy-50 dark:bg-navy-900 p-3 rounded-xl border border-navy-100 dark:border-navy-800 text-center">
+                    <p className="text-xs text-navy-400 dark:text-navy-300 uppercase font-bold">Jarak</p>
+                    <p className="text-lg font-bold text-navy-900 dark:text-white">{totalDist.toFixed(1)}k</p>
                 </div>
-                <div className="bg-navy-50 p-3 rounded-xl border border-navy-100 text-center">
-                    <p className="text-xs text-navy-400 uppercase font-bold">Jam</p>
-                    <p className="text-lg font-bold text-navy-900">{totalTime.toFixed(1)}h</p>
+                <div className="bg-navy-50 dark:bg-navy-900 p-3 rounded-xl border border-navy-100 dark:border-navy-800 text-center">
+                    <p className="text-xs text-navy-400 dark:text-navy-300 uppercase font-bold">Jam</p>
+                    <p className="text-lg font-bold text-navy-900 dark:text-white">{totalTime.toFixed(1)}h</p>
                 </div>
-                <div className="bg-navy-50 p-3 rounded-xl border border-navy-100 text-center">
-                    <p className="text-xs text-navy-400 uppercase font-bold">Kalori</p>
-                    <p className="text-lg font-bold text-navy-900">{totalKcal.toFixed(0)}</p>
+                <div className="bg-navy-50 dark:bg-navy-900 p-3 rounded-xl border border-navy-100 dark:border-navy-800 text-center">
+                    <p className="text-xs text-navy-400 dark:text-navy-300 uppercase font-bold">Kalori</p>
+                    <p className="text-lg font-bold text-navy-900 dark:text-white">{totalKcal.toFixed(0)}</p>
                 </div>
             </div>
 
             {/* Chart Section */}
             <div className="mb-8">
-                <h3 className="font-bold text-navy-900 mb-3">Grafik Aktivitas</h3>
-                <div className="h-48 w-full">
+                <h3 className="font-bold text-navy-900 dark:text-white mb-3">Grafik Aktivitas</h3>
+                <div className="h-48 w-full p-2 bg-white dark:bg-navy-900 rounded-xl border border-gray-100 dark:border-navy-800">
                     <Bar
                         data={chartData}
                         options={{
@@ -97,8 +100,15 @@ const Statistics = () => {
                             maintainAspectRatio: false,
                             plugins: { legend: { display: false } },
                             scales: {
-                                y: { beginAtZero: true, grid: { display: false } },
-                                x: { grid: { display: false } }
+                                y: {
+                                    beginAtZero: true,
+                                    grid: { display: false },
+                                    ticks: { color: theme === 'dark' ? '#94a3b8' : '#64748b' }
+                                },
+                                x: {
+                                    grid: { display: false },
+                                    ticks: { color: theme === 'dark' ? '#94a3b8' : '#64748b' }
+                                }
                             }
                         }}
                     />
@@ -106,13 +116,13 @@ const Statistics = () => {
             </div>
 
             {/* Calendar Section */}
-            <div className="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm">
+            <div className="bg-white dark:bg-navy-900 border border-gray-100 dark:border-navy-800 rounded-2xl p-4 shadow-sm">
                 <div className="flex justify-between items-center mb-4">
-                    <h3 className="font-bold text-navy-900">Kalender Aktif</h3>
-                    <div className="flex gap-2">
-                        <button onClick={prevMonth} className="p-1 hover:bg-gray-100 rounded"><ChevronLeft size={16} /></button>
+                    <h3 className="font-bold text-navy-900 dark:text-white">Kalender Aktif</h3>
+                    <div className="flex gap-2 text-navy-900 dark:text-gray-200">
+                        <button onClick={prevMonth} className="p-1 hover:bg-gray-100 dark:hover:bg-navy-800 rounded"><ChevronLeft size={16} /></button>
                         <span className="text-sm font-medium">{format(calendarDate, 'MMMM yyyy', { locale: id })}</span>
-                        <button onClick={nextMonth} className="p-1 hover:bg-gray-100 rounded"><ChevronRight size={16} /></button>
+                        <button onClick={nextMonth} className="p-1 hover:bg-gray-100 dark:hover:bg-navy-800 rounded"><ChevronRight size={16} /></button>
                     </div>
                 </div>
 
@@ -134,9 +144,9 @@ const Statistics = () => {
                         return (
                             <div key={i} className="aspect-square flex items-center justify-center relative">
                                 <div className={`
-                                    w-8 h-8 flex items-center justify-center rounded-full text-sm
-                                    ${isActive ? 'bg-navy-900 text-white font-bold' : 'text-gray-600'}
-                                    ${isToday && !isActive ? 'border border-navy-900 text-navy-900' : ''}
+                                    w-8 h-8 flex items-center justify-center rounded-full text-sm transition-colors
+                                    ${isActive ? 'bg-navy-900 dark:bg-navy-500 text-white font-bold' : 'text-gray-600 dark:text-gray-400'}
+                                    ${isToday && !isActive ? 'border border-navy-900 dark:border-navy-500 text-navy-900 dark:text-navy-300' : ''}
                                 `}>
                                     {format(day, 'd')}
                                 </div>
