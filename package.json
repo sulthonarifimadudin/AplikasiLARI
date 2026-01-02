@@ -11,9 +11,11 @@
     },
     "dependencies": {
         "@capacitor/android": "^8.0.0",
+        "@capacitor/app-launcher": "^8.0.0",
         "@capacitor/cli": "^8.0.0",
         "@capacitor/core": "^8.0.0",
         "@capacitor/filesystem": "^8.0.0",
+        "@capacitor/local-notifications": "^8.0.0",
         "@capacitor/share": "^8.0.0",
         "@supabase/supabase-js": "^2.89.0",
         "chart.js": "^4.4.2",

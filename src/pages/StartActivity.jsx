@@ -8,8 +8,9 @@ import { haversineDistance } from '../utils/haversine';
 import { calculatePace, formatTime } from '../utils/paceCalculator';
 import { usePedometer } from '../hooks/usePedometer';
 import { saveActivity } from '../services/activityStorage';
-import { Play, Pause, Square, Map as MapIcon, Loader2, ChevronLeft, Footprints } from 'lucide-react';
+import { Play, Pause, Square, Map as MapIcon, Loader2, ChevronLeft, Footprints, Music } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
+import { openMusicApp } from '../services/musicService';
 
 const StartActivity = () => {
     const { t, language } = useLanguage();
@@ -198,16 +199,28 @@ const StartActivity = () => {
                         GPS: {Math.round(location?.accuracy || 0)}m
                     </div>
 
-                    <select
-                        value={currentActivityType}
-                        onChange={(e) => setCurrentActivityType(e.target.value)}
-                        className="bg-navy-900/50 backdrop-blur-md text-white border border-white/20 rounded-full px-3 py-1 text-xs outline-none"
-                        disabled={isTracking}
+                    <div className="flex bg-navy-900/50 backdrop-blur-md rounded-full text-white border border-white/20 p-1">
+                        <select
+                            value={currentActivityType}
+                            onChange={(e) => setCurrentActivityType(e.target.value)}
+                            className="bg-transparent text-white text-xs outline-none px-2 py-0.5"
+                            disabled={isTracking}
+                        >
+                            <option value="running">{t('run')}</option>
+                            <option value="walking">{t('walk')}</option>
+                            <option value="cycling">{t('cycle')}</option>
+                        </select>
+                    </div>
+
+                    <button
+                        onClick={openMusicApp}
+                        className="bg-black/40 backdrop-blur-md p-2 rounded-full hover:bg-green-500 hover:text-white text-[#1DB954] transition-all ml-2 border border-white/10"
+                        title="Open Spotify"
                     >
-                        <option value="running">{t('run')}</option>
-                        <option value="walking">{t('walk')}</option>
-                        <option value="cycling">{t('cycle')}</option>
-                    </select>
+                        <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.58 14.4c-.18.3-.52.4-.8.22-2.2-1.34-4.96-1.64-8.22-.9-.32.08-.64-.12-.72-.44-.08-.32.12-.64.44-.72 3.58-.8 6.66-.46 9.1 1.04.28.18.38.52.2.8zm1.12-2.52c-.22.38-.7.5-1.08.28-2.72-1.66-6.86-2.14-10.06-1.16-.42.12-.88-.12-.98-.52-.12-.42.12-.88.52-.98 3.66-1.12 8.32-.58 11.4 1.32.38.22.5.7.28 1.08zm.14-2.56c-3.26-1.94-8.66-2.12-11.78-1.16-.5.16-1.04-.12-1.2-.62-.16-.5.12-1.04.62-1.2 3.6-1.12 9.7-.9 13.54 1.38.46.28.62.88.34 1.34-.28.46-.88.62-1.34.34z" />
+                        </svg>
+                    </button>
                 </div>
             )}
 

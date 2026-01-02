@@ -1,16 +1,18 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Plus, User, BarChart2, Users } from 'lucide-react';
+import { Home, Plus, User, BarChart2, Users, AlarmClock } from 'lucide-react';
 import clsx from 'clsx';
 import { useAuth } from '../contexts/AuthContext';
 import { getProfile } from '../services/profileService';
 import { useLanguage } from '../contexts/LanguageContext'; // Import translation hook
 import { useEffect, useState } from 'react';
+import ReminderSheet from './ReminderSheet';
 
 const Layout = ({ children }) => {
     const location = useLocation();
     const { user } = useAuth();
     const { t } = useLanguage();
     const [avatarUrl, setAvatarUrl] = useState(null);
+    const [showReminder, setShowReminder] = useState(false);
 
     useEffect(() => {
         const fetchAvatar = async () => {
@@ -44,14 +46,26 @@ const Layout = ({ children }) => {
         <div className="flex flex-col h-screen bg-gray-50 dark:bg-navy-950 max-w-md mx-auto shadow-2xl overflow-hidden border-x border-gray-200 dark:border-navy-900">
             <header className="bg-navy-950 text-white pt-[max(1rem,env(safe-area-inset-top))] pb-4 px-4 z-50 flex justify-between items-center relative">
                 <img src="/ESTE_LOGO.png" alt="Este.RUN" className="h-8 w-auto object-contain drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)]" />
-                <Link to="/profile" className="w-8 h-8 rounded-full bg-navy-800 border-2 border-navy-600 flex items-center justify-center text-xs font-bold overflow-hidden transition-transform active:scale-95">
-                    {avatarUrl ? (
-                        <img src={avatarUrl} alt="User" className="w-full h-full object-cover" />
-                    ) : (
-                        user?.email?.[0].toUpperCase() || 'U'
-                    )}
-                </Link>
+
+                <div className="flex items-center gap-3">
+                    <button
+                        onClick={() => setShowReminder(true)}
+                        className="w-8 h-8 rounded-full bg-navy-800 border-2 border-navy-600 flex items-center justify-center text-white active:scale-95 transition-transform"
+                    >
+                        <AlarmClock size={16} />
+                    </button>
+
+                    <Link to="/profile" className="w-8 h-8 rounded-full bg-navy-800 border-2 border-navy-600 flex items-center justify-center text-xs font-bold overflow-hidden transition-transform active:scale-95">
+                        {avatarUrl ? (
+                            <img src={avatarUrl} alt="User" className="w-full h-full object-cover" />
+                        ) : (
+                            user?.email?.[0].toUpperCase() || 'U'
+                        )}
+                    </Link>
+                </div>
             </header>
+
+            <ReminderSheet isOpen={showReminder} onClose={() => setShowReminder(false)} />
 
             <main className="flex-1 overflow-y-auto p-4 pb-24 no-scrollbar bg-gray-50 dark:bg-navy-950 transition-colors relative">
                 {children}
