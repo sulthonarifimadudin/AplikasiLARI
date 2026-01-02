@@ -1,11 +1,12 @@
-import { Link, useLocation } from 'react-router-dom';
-import { Home, Plus, User, BarChart2, Users, AlarmClock } from 'lucide-react';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
+import { Home, User, BarChart2, Plus, Users, Bell, AlarmClock } from 'lucide-react';
 import clsx from 'clsx';
 import { useAuth } from '../contexts/AuthContext';
 import { getProfile } from '../services/profileService';
 import { useLanguage } from '../contexts/LanguageContext'; // Import translation hook
 import { useEffect, useState } from 'react';
 import ReminderSheet from './ReminderSheet';
+import CoachChat from './CoachChat';
 
 const Layout = ({ children }) => {
     const location = useLocation();
@@ -86,6 +87,9 @@ const Layout = ({ children }) => {
                 <NavItem to="/stats" icon={BarChart2} label={t('recap')} />
                 <NavItem to="/profile" icon={User} label={t('profile')} />
             </nav>
+
+            {/* <CoachChat /> */}
+            <CoachChat />
         </div>
     );
 };
