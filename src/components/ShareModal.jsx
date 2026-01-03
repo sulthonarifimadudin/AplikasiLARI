@@ -74,43 +74,56 @@ const ShareModal = ({ isOpen, onClose, activity }) => {
 
     const renderClassic = () => (
         <div className="w-full h-full relative bg-navy-950 text-white overflow-hidden">
-            {/* Background */}
+            {/* Background Layer */}
             <div className="absolute inset-0 z-0">
                 {activity.photoUrl ? (
                     <img src={activity.photoUrl} className="w-full h-full object-cover" crossOrigin="anonymous" />
                 ) : (
                     <MapView routePath={activity.routePath} interactive={false} zoom={15} />
                 )}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-black/60" />
+                {/* Strong Gradients (Restored from previous design) */}
+                <div className="absolute top-0 left-0 right-0 h-48 bg-gradient-to-b from-black/80 via-black/40 to-transparent z-10" />
+                <div className="absolute bottom-0 left-0 right-0 h-64 bg-gradient-to-t from-black/90 via-black/60 to-transparent z-10" />
+                {/* Overall Darken for Photo readability */}
+                <div className="absolute inset-0 bg-black/20 z-0" />
             </div>
 
-            {/* Content */}
-            <div className="relative z-10 flex flex-col justify-between h-full p-8">
+            {/* Content Overlay */}
+            <div className="relative z-20 flex flex-col justify-between h-full p-8">
+                {/* Header */}
                 <div className="flex justify-between items-start">
-                    <h1 className="text-3xl font-black italic tracking-tighter">Este.RUN</h1>
+                    <h1 className="text-3xl font-black italic tracking-tighter drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">Este.RUN</h1>
                     <div className="text-right">
-                        <p className="font-bold text-lg">{activity.title}</p>
-                        <p className="text-xs opacity-80">{new Date(activity.startTime).toLocaleDateString()}</p>
+                        <h2 className="text-xl font-bold italic drop-shadow-md">{activity.title}</h2>
+                        <p className="text-xs opacity-90 drop-shadow-md">{new Date(activity.startTime).toLocaleDateString()}</p>
                     </div>
                 </div>
 
-                <div>
+                {/* Main Stats */}
+                <div className="mt-auto">
                     <div className="flex items-baseline mb-4">
-                        <span className="text-8xl font-black italic tracking-tighter">{activity.distance.toFixed(2)}</span>
-                        <span className="text-3xl font-bold ml-2">KM</span>
+                        <span className="text-[100px] leading-none font-black italic tracking-tighter drop-shadow-2xl" style={{ textShadow: '0 4px 12px rgba(0,0,0,0.8)' }}>
+                            {activity.distance.toFixed(2)}
+                        </span>
+                        <span className="text-3xl font-bold ml-3 italic opacity-90 drop-shadow-lg">KM</span>
                     </div>
-                    <div className="grid grid-cols-3 gap-4 border-t border-white/30 pt-4">
+
+                    <div className="grid grid-cols-3 gap-6 border-t border-white/40 pt-6">
                         <div>
-                            <p className="text-[10px] uppercase tracking-widest opacity-80">Duration</p>
-                            <p className="text-2xl font-bold italic">{formatTime(activity.duration)}</p>
+                            <p className="text-sm font-bold uppercase tracking-widest opacity-90 mb-1 drop-shadow-md">Duration</p>
+                            <p className="text-3xl font-black italic drop-shadow-lg">{formatTime(activity.duration)}</p>
                         </div>
                         <div>
-                            <p className="text-[10px] uppercase tracking-widest opacity-80">{activity.type === 'walking' ? 'Steps' : 'Pace'}</p>
-                            <p className="text-2xl font-bold italic">{activity.type === 'walking' ? activity.steps : activity.pace}</p>
+                            <p className="text-sm font-bold uppercase tracking-widest opacity-90 mb-1 drop-shadow-md">
+                                {activity.type === 'walking' ? 'Steps' : 'Pace'}
+                            </p>
+                            <p className="text-3xl font-black italic drop-shadow-lg">
+                                {activity.type === 'walking' ? activity.steps : activity.pace}
+                            </p>
                         </div>
                         <div>
-                            <p className="text-[10px] uppercase tracking-widest opacity-80">Cals</p>
-                            <p className="text-2xl font-bold italic">{(activity.distance * 60).toFixed(0)}</p>
+                            <p className="text-sm font-bold uppercase tracking-widest opacity-90 mb-1 drop-shadow-md">Cals</p>
+                            <p className="text-3xl font-black italic drop-shadow-lg">{(activity.distance * 60).toFixed(0)}</p>
                         </div>
                     </div>
                 </div>
@@ -127,36 +140,39 @@ const ShareModal = ({ isOpen, onClose, activity }) => {
                 ) : (
                     <div className="w-full h-full relative">
                         <MapView routePath={activity.routePath} interactive={false} zoom={15} />
-                        {/* Overlay Route nicely if using map */}
                         <div className="absolute inset-0 bg-navy-900/30 backdrop-blur-[1px]" />
                         <div className="absolute inset-0 flex items-center justify-center p-12">
                             <RouteSvgRenderer routePath={activity.routePath} strokeColor="#fdba74" strokeWidth={8} />
                         </div>
                     </div>
                 )}
-                <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/80" />
+                {/* Stronger Gradients for Story */}
+                <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-transparent to-black/90 pointer-events-none" />
             </div>
 
-            <div className="relative z-10 flex flex-col justify-between h-full p-10 py-16">
+            <div className="relative z-10 flex flex-col justify-between h-full p-10 py-20">
                 <div className="text-center">
-                    <h1 className="text-4xl font-black italic tracking-tighter mb-2">Este.RUN</h1>
-                    <div className="inline-block px-4 py-1 rounded-full bg-white/20 backdrop-blur-md border border-white/20">
-                        <p className="font-bold text-sm">{activity.title}</p>
+                    <h1 className="text-5xl font-black italic tracking-tighter mb-4 drop-shadow-2xl">Este.RUN</h1>
+                    <div className="inline-block px-5 py-2 rounded-full bg-black/30 backdrop-blur-md border border-white/20 shadow-lg">
+                        <p className="font-bold text-base drop-shadow-md">{activity.title}</p>
                     </div>
                 </div>
 
-                <div className="text-center">
-                    <div className="flex items-baseline justify-center mb-6">
-                        <span className="text-[120px] leading-none font-black italic tracking-tighter drop-shadow-lg">{activity.distance.toFixed(2)}</span>
+                <div className="text-center mb-10">
+                    <div className="flex items-baseline justify-center mb-8">
+                        <span className="text-[150px] leading-none font-black italic tracking-tighter drop-shadow-2xl" style={{ textShadow: '0 8px 24px rgba(0,0,0,0.6)' }}>
+                            {activity.distance.toFixed(2)}
+                        </span>
+                        <span className="text-4xl font-bold ml-4 italic opacity-90 drop-shadow-lg">KM</span>
                     </div>
-                    <div className="flex justify-center gap-8">
+                    <div className="flex justify-center gap-12">
                         <div className="text-center">
-                            <p className="text-3xl font-bold italic">{formatTime(activity.duration)}</p>
-                            <p className="text-[10px] uppercase tracking-widest opacity-80">Duration</p>
+                            <p className="text-4xl font-black italic drop-shadow-xl">{formatTime(activity.duration)}</p>
+                            <p className="text-xs font-bold uppercase tracking-widest opacity-80 mt-1 drop-shadow-md">Duration</p>
                         </div>
                         <div className="text-center">
-                            <p className="text-3xl font-bold italic">{activity.type === 'walking' ? activity.steps : activity.pace}</p>
-                            <p className="text-[10px] uppercase tracking-widest opacity-80">{activity.type === 'walking' ? 'Steps' : 'Pace'}</p>
+                            <p className="text-4xl font-black italic drop-shadow-xl">{activity.type === 'walking' ? activity.steps : activity.pace}</p>
+                            <p className="text-xs font-bold uppercase tracking-widest opacity-80 mt-1 drop-shadow-md">{activity.type === 'walking' ? 'Steps' : 'Pace'}</p>
                         </div>
                     </div>
                 </div>
@@ -173,31 +189,31 @@ const ShareModal = ({ isOpen, onClose, activity }) => {
                     <MapView routePath={activity.routePath} interactive={false} zoom={15} />
                 )}
                 {/* Branding Badge */}
-                <div className="absolute top-4 left-4 bg-navy-950 text-white px-3 py-1 font-black italic -skew-x-12">
+                <div className="absolute top-6 left-6 bg-navy-950 text-white px-4 py-1.5 font-black italic text-lg -skew-x-12 shadow-xl">
                     Este.RUN
                 </div>
             </div>
-            <div className="h-2/5 p-6 bg-white flex flex-col justify-center">
-                <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-2xl font-bold">{activity.title}</h2>
-                    <span className="text-xs text-gray-500">{new Date(activity.startTime).toLocaleDateString()}</span>
+            <div className="h-2/5 p-8 bg-white flex flex-col justify-center">
+                <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-3xl font-bold tracking-tight">{activity.title}</h2>
+                    <span className="text-sm font-medium text-gray-500 bg-gray-100 px-3 py-1 rounded-full">{new Date(activity.startTime).toLocaleDateString()}</span>
                 </div>
-                <div className="grid grid-cols-2 gap-y-4 gap-x-8">
+                <div className="grid grid-cols-2 gap-y-6 gap-x-10">
                     <div>
-                        <p className="text-xs text-gray-400 uppercase font-bold">Distance</p>
-                        <p className="text-3xl font-black italic text-navy-950">{activity.distance.toFixed(2)} <span className="text-sm font-normal not-italic text-gray-400">km</span></p>
+                        <p className="text-xs text-gray-400 uppercase font-black tracking-wider">Distance</p>
+                        <p className="text-4xl font-black italic text-navy-950 tracking-tight">{activity.distance.toFixed(2)} <span className="text-base font-bold not-italic text-gray-400">km</span></p>
                     </div>
                     <div>
-                        <p className="text-xs text-gray-400 uppercase font-bold">Time</p>
-                        <p className="text-3xl font-black italic text-navy-950">{formatTime(activity.duration)}</p>
+                        <p className="text-xs text-gray-400 uppercase font-black tracking-wider">Time</p>
+                        <p className="text-4xl font-black italic text-navy-950 tracking-tight">{formatTime(activity.duration)}</p>
                     </div>
                     <div>
-                        <p className="text-xs text-gray-400 uppercase font-bold">Avg Pace</p>
-                        <p className="text-3xl font-black italic text-navy-950">{activity.pace}</p>
+                        <p className="text-xs text-gray-400 uppercase font-black tracking-wider">Avg Pace</p>
+                        <p className="text-4xl font-black italic text-navy-950 tracking-tight">{activity.pace}</p>
                     </div>
                     <div>
-                        <p className="text-xs text-gray-400 uppercase font-bold">Calories</p>
-                        <p className="text-3xl font-black italic text-navy-950">{(activity.distance * 60).toFixed(0)}</p>
+                        <p className="text-xs text-gray-400 uppercase font-black tracking-wider">Calories</p>
+                        <p className="text-4xl font-black italic text-navy-950 tracking-tight">{(activity.distance * 60).toFixed(0)}</p>
                     </div>
                 </div>
             </div>
@@ -205,31 +221,31 @@ const ShareModal = ({ isOpen, onClose, activity }) => {
     );
 
     const renderTransparent = () => (
-        <div className="w-full h-full relative bg-transparent flex flex-col justify-between p-8">
-            {/* Route & Brand Centered */}
-            <div className="absolute inset-0 flex items-center justify-center opacity-20">
-                {/* Optional: Add Huge Watermark or Route */}
-                <h1 className="text-[150px] font-black italic text-white rotate-[-30deg]">Este.RUN</h1>
+        // KEY FIX: bg-transparent explicitly
+        <div className="w-full h-full relative bg-transparent flex flex-col justify-between p-10">
+            {/* Route & Brand Centered - Opacity increased for visibility */}
+            <div className="absolute inset-0 flex items-center justify-center opacity-30 pointer-events-none">
+                <h1 className="text-[180px] font-black italic text-white rotate-[-30deg] tracking-tighter drop-shadow-2xl">Este.RUN</h1>
             </div>
 
-            <div className="relative z-10">
-                <img src="/ESTE_LOGO.png" className="h-12 w-auto mb-2" />
-                <h2 className="text-4xl font-black italic text-white drop-shadow-md">{activity.title}</h2>
+            <div className="relative z-10 w-full">
+                <img src="/ESTE_LOGO.png" className="h-16 w-auto mb-4 drop-shadow-lg" />
+                <h2 className="text-5xl font-black italic text-white drop-shadow-[0_4px_8px_rgba(0,0,0,0.8)] tracking-tight leading-tight w-3/4">{activity.title}</h2>
             </div>
 
             <div className="relative z-10">
                 <div className="flex items-baseline">
-                    <span className="text-[120px] leading-none font-black italic text-white drop-shadow-xl">{activity.distance.toFixed(2)}</span>
-                    <span className="text-4xl font-bold text-white ml-2 drop-shadow-md">KM</span>
+                    <span className="text-[140px] leading-none font-black italic text-white drop-shadow-[0_8px_16px_rgba(0,0,0,0.8)] tracking-tighter">{activity.distance.toFixed(2)}</span>
+                    <span className="text-5xl font-bold text-white ml-4 drop-shadow-[0_4px_8px_rgba(0,0,0,0.8)] italic">KM</span>
                 </div>
-                <div className="flex gap-8 mt-4">
+                <div className="flex gap-12 mt-6 border-t-4 border-white/40 pt-6 w-max">
                     <div className="text-white">
-                        <p className="text-sm font-bold opacity-90 uppercase shadow-black drop-shadow-md">Time</p>
-                        <p className="text-3xl font-black italic drop-shadow-lg">{formatTime(activity.duration)}</p>
+                        <p className="text-sm font-bold opacity-100 uppercase drop-shadow-md tracking-widest mb-1">Time</p>
+                        <p className="text-4xl font-black italic drop-shadow-[0_4px_8px_rgba(0,0,0,0.8)]">{formatTime(activity.duration)}</p>
                     </div>
                     <div className="text-white">
-                        <p className="text-sm font-bold opacity-90 uppercase shadow-black drop-shadow-md">Pace</p>
-                        <p className="text-3xl font-black italic drop-shadow-lg">{activity.pace}</p>
+                        <p className="text-sm font-bold opacity-100 uppercase drop-shadow-md tracking-widest mb-1">Pace</p>
+                        <p className="text-4xl font-black italic drop-shadow-[0_4px_8px_rgba(0,0,0,0.8)]">{activity.pace}</p>
                     </div>
                 </div>
             </div>
