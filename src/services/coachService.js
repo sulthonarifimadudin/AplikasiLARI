@@ -41,11 +41,12 @@ export const sendMessageToGemini = async (history, newMessage) => {
                 "Content-Type": "application/json",
                 "HTTP-Referer": "https://este.run", // Required for free models
                 "X-Title": "Este.RUN" // Required for free models
+            },
             body: JSON.stringify({
-                    "model": "xiaomi/mimo-v2-flash:free", // Using Xiaomi Mimo Flash via OpenRouter
-                    "messages": messages
-                })
-            });
+                "model": "xiaomi/mimo-v2-flash:free", // Using Xiaomi Mimo Flash via OpenRouter
+                "messages": messages
+            })
+        });
 
         if (!response.ok) {
             const errorData = await response.json().catch(() => ({}));
