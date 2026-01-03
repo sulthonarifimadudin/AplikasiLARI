@@ -16,14 +16,17 @@ import { Capacitor } from '@capacitor/core';
 import { Share } from '@capacitor/share';
 import { Filesystem, Directory } from '@capacitor/filesystem';
 
+import ShareModal from '../components/ShareModal';
+
 const ActivityDetail = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const { user } = useAuth();
-    const { t, language } = useLanguage(); // Add language hook
+    const { t, language } = useLanguage();
 
     const [activity, setActivity] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [showShareModal, setShowShareModal] = useState(false); // New State
 
     // Edit State
     const [isEditingTitle, setIsEditingTitle] = useState(false);
@@ -36,11 +39,8 @@ const ActivityDetail = () => {
     const [searchResults, setSearchResults] = useState([]);
     const [isSearching, setIsSearching] = useState(false);
 
-    // Export Refs
-    const standardExportRef = useRef(null);
-    const transparentExportRef = useRef(null);
+    // (Old export refs removed)
 
-    const [isExporting, setIsExporting] = useState(false);
     const [uploading, setUploading] = useState(false);
 
     useEffect(() => {
@@ -307,9 +307,9 @@ const ActivityDetail = () => {
                 </button>
                 <div className="flex gap-2">
                     <button
-                        onClick={handleShareLink}
+                        onClick={() => setShowShareModal(true)}
                         className="p-2 hover:bg-gray-100 dark:hover:bg-navy-800 text-navy-600 dark:text-gray-300 rounded-full transition-colors"
-                        title="Bagikan Link"
+                        title="Bagikan"
                     >
                         <Share2 size={20} />
                     </button>
@@ -328,239 +328,79 @@ const ActivityDetail = () => {
                 </div>
             </div>
 
-            {/* --- STANDARD VIEW (With Map/Photo) --- */}
-            <div ref={standardExportRef} className="relative w-full aspect-[4/5] rounded-2xl overflow-hidden shadow-lg border border-gray-100 mb-8 max-w-md mx-auto">
+            {/* Share Modal */}
+            <ShareModal
+                isOpen={showShareModal}
+                onClose={() => setShowShareModal(false)}
+                activity={activity}
+            />
+
+            {/* Standard View (Just for display now, not for export ref) */}
+            <div className="relative w-full aspect-[4/5] rounded-2xl overflow-hidden shadow-lg border border-gray-100 mb-8 max-w-md mx-auto">
                 {/* Background Layer (z-0) */}
                 <div className="absolute inset-0 z-0">
-                    {exportBgMode === 'photo' && activity.photoUrl ? (
-                        <img src={activity.photoUrl} className="w-full h-full object-cover" alt="Activity" crossOrigin="anonymous" />
+                    {activity.photoUrl ? (
+                        <img src={activity.photoUrl} className="w-full h-full object-cover" alt="Activity" />
                     ) : (
                         <div className="w-full h-full relative">
                             <MapView routePath={activity.routePath} interactive={false} zoom={15} />
                             <div className="absolute inset-0 bg-gradient-to-t from-navy-950/90 via-navy-900/20 to-navy-950/40 pointer-events-none" />
                         </div>
                     )}
-                    {/* Overlay Black for Photo Mode visibility*/}
-                    {exportBgMode === 'photo' && <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/60 pointer-events-none" />}
                 </div>
 
-                {/* Gradient Layer (z-10) - Ensures visibility over Map */}
-                <div className="absolute inset-0 z-10 pointer-events-none">
-                    {/* Stronger Gradients for Readability - ALWAYS RENDERED */}
-                    {/* Top Gradient */}
-                    <div className="absolute top-0 left-0 right-0 h-48 bg-gradient-to-b from-black/80 via-black/40 to-transparent pointer-events-none z-20" />
-                    {/* Bottom Gradient */}
-                    <div className="absolute bottom-0 left-0 right-0 h-64 bg-gradient-to-t from-black/90 via-black/60 to-transparent pointer-events-none z-20" />
-                </div>
-
-                {/* Content Overlay (z-30) */}
-                <div className="absolute inset-0 z-30 flex flex-col justify-between p-6">
+                {/* Content Overlay */}
+                <div className="absolute inset-0 z-30 flex flex-col justify-between p-6 bg-gradient-to-b from-black/40 via-transparent to-black/80">
                     {/* Header */}
                     <div className="flex justify-between items-start">
-                        <div className="flex flex-col items-start gap-1">
-                            <h1 className="text-3xl font-black text-white italic tracking-tighter drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] leading-none">Este.RUN</h1>
-
-                            {/* Editable Title Section */}
-                            <div className="flex flex-col gap-1 mt-1">
-                                {/* Title Edit */}
-                                <div className="flex items-center gap-2">
-                                    {isEditingTitle ? (
-                                        <div className="flex items-center gap-1 bg-black/40 backdrop-blur-md rounded-lg p-1">
-                                            <input
-                                                type="text"
-                                                value={editTitleInput}
-                                                onChange={(e) => setEditTitleInput(e.target.value)}
-                                                className="bg-transparent border-b border-white/50 text-white font-bold italic text-sm focus:outline-none w-40 px-1"
-                                                autoFocus
-                                            />
-                                            <button onClick={handleSaveTitle} className="p-1 hover:bg-white/20 rounded-full text-green-400"><Check size={14} /></button>
-                                            <button onClick={() => setIsEditingTitle(false)} className="p-1 hover:bg-white/20 rounded-full text-red-400"><X size={14} /></button>
-                                        </div>
-                                    ) : (
-                                        <div className="flex items-center gap-2 group">
-                                            <h2 className="text-xl font-bold text-white/90 italic tracking-tight drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)]">
-                                                {activity.title}
-                                            </h2>
-                                            <button
-                                                onClick={() => { setEditTitleInput(activity.title); setIsEditingTitle(true); }}
-                                                className="opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-white/10 rounded-full text-white/70 no-export"
-                                            >
-                                                <Pencil size={12} />
-                                            </button>
-                                        </div>
-                                    )}
-                                </div>
-
-                                {/* Location Edit (Real Search) */}
-                                <div className="relative">
-                                    {isEditingLocation ? (
-                                        <div className="bg-black/60 backdrop-blur-md rounded-lg p-2 absolute top-0 left-0 z-50 w-64 border border-white/20 shadow-xl">
-                                            <div className="flex items-center gap-2 mb-2">
-                                                <Search size={14} className="text-white/70" />
-                                                <input
-                                                    type="text"
-                                                    value={locationInput}
-                                                    onChange={(e) => setLocationInput(e.target.value)}
-                                                    placeholder="Cari tempat (misal: Alun-alun)..."
-                                                    className="bg-transparent text-white text-xs w-full focus:outline-none placeholder-white/30"
-                                                    autoFocus
-                                                />
-                                                <button onClick={() => setIsEditingLocation(false)} className="text-white/50 hover:text-white"><X size={14} /></button>
-                                            </div>
-
-                                            {/* Search Results Dropdown */}
-                                            <div className="max-h-32 overflow-y-auto space-y-1">
-                                                {isSearching && <div className="text-white/50 text-[10px] p-1">Mencari...</div>}
-                                                {!isSearching && searchResults.length === 0 && locationInput.length > 2 && (
-                                                    <div className="text-white/50 text-[10px] p-1">Tidak ditemukan</div>
-                                                )}
-                                                {searchResults.map((place, idx) => (
-                                                    <button
-                                                        key={idx}
-                                                        onClick={() => handleSelectLocation(place)}
-                                                        className="w-full text-left text-white text-[10px] hover:bg-white/20 p-1.5 rounded truncate"
-                                                    >
-                                                        {place.display_name}
-                                                    </button>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    ) : (
-                                        <div className="flex items-center gap-1 group cursor-pointer" onClick={() => { setIsEditingLocation(true); setLocationInput(''); }}>
-                                            <MapPin size={12} className="text-orange-500 drop-shadow-md" />
-                                            <p className="text-white/80 font-bold text-xs drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] hover:text-orange-400 transition-colors">
-                                                {activity.location || t('location')}
-                                            </p>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-
-                            <p className="text-white/80 font-bold text-xs drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] mt-1">
-                                {new Date(activity.startTime).toLocaleDateString(language === 'id' ? 'id-ID' : 'en-US', { weekday: 'long', day: 'numeric', month: 'short' })}
-                            </p>
-                        </div>
-                        <div className="text-white font-bold drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)] text-right text-[10px] bg-black/30 backdrop-blur-md px-3 py-1 rounded-full border border-white/20 uppercase tracking-widest">
-                            {activity.type}
+                        <h1 className="text-3xl font-black text-white italic tracking-tighter drop-shadow-md">Este.RUN</h1>
+                        <div className="text-right">
+                            <h2 className="text-xl font-bold text-white italic">{activity.title}</h2>
+                            <p className="text-white/80 text-xs">{new Date(activity.startTime).toLocaleDateString()}</p>
                         </div>
                     </div>
 
                     {/* Stats */}
                     <div className="mt-auto">
                         <div className="flex items-baseline mb-4">
-                            <span className="text-[100px] leading-none font-black text-white italic tracking-tighter drop-shadow-2xl" style={{ textShadow: '0 4px 12px rgba(0,0,0,0.8)' }}>
+                            <span className="text-[80px] leading-none font-black text-white italic tracking-tighter drop-shadow-2xl">
                                 {activity.distance.toFixed(2)}
                             </span>
-                            <span className="text-3xl font-bold text-white italic ml-3 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] opacity-90">KM</span>
+                            <span className="text-2xl font-bold text-white italic ml-2 opacity-90">KM</span>
                         </div>
 
-                        <div className="flex gap-8 border-t border-white/30 pt-4">
+                        <div className="flex justify-between border-t border-white/30 pt-4">
                             <div>
-                                <p className="text-white/90 font-bold text-lg uppercase tracking-widest mb-0.5 drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">{t('duration')}</p>
-                                <p className="text-2xl font-black text-white italic tracking-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">{formatTime(activity.duration)}</p>
+                                <p className="text-xs text-white/80 uppercase mb-1">{t('duration')}</p>
+                                <p className="text-xl font-bold text-white italic">{formatTime(activity.duration)}</p>
                             </div>
                             <div>
-                                <p className="text-white/90 font-bold text-lg uppercase tracking-widest mb-0.5 drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
-                                    {activity.type === 'walking' ? t('steps') : t('pace')}
-                                </p>
-                                <p className="text-2xl font-black text-white italic tracking-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
-                                    {activity.type === 'walking' ? activity.steps : activity.pace}
-                                </p>
+                                <p className="text-xs text-white/80 uppercase mb-1">{activity.type === 'walking' ? t('steps') : t('pace')}</p>
+                                <p className="text-xl font-bold text-white italic">{activity.type === 'walking' ? activity.steps : activity.pace}</p>
                             </div>
                             <div>
-                                <p className="text-white/90 font-bold text-lg uppercase tracking-widest mb-0.5 drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">{t('cal')}</p>
-                                <p className="text-2xl font-black text-white italic tracking-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">{(activity.distance * 60).toFixed(0)}</p>
+                                <p className="text-xs text-white/80 uppercase mb-1">{t('cal')}</p>
+                                <p className="text-xl font-bold text-white italic">{(activity.distance * 60).toFixed(0)}</p>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            {/* --- HIDDEN TRANSPARENT OVERLAY TEMPLATE --- */}
-            <div className="absolute top-[-9999px] left-[-9999px]">
-                {/* 4:5 Aspect Ratio Container (Instagram Story/Post size approx) */}
-                <div ref={transparentExportRef} className="w-[600px] h-[750px] relative bg-transparent flex flex-col justify-between overflow-hidden p-8">
-                    {/* Route Layer */}
-                    {/* Route Layer */}
-                    <div className="absolute z-0 inset-x-8 top-64 bottom-80 flex items-center justify-center opacity-90">
-                        {/* White Outline Layer */}
-                        <div className="absolute inset-0 flex items-center justify-center drop-shadow-2xl">
-                            <RouteSvgRenderer
-                                routePath={activity.routePath}
-                                strokeColor="#ffffff"
-                                strokeWidth={14}
-                            />
-                        </div>
-                        {/* Orange Path Layer */}
-                        <div className="absolute inset-0 flex items-center justify-center">
-                            <RouteSvgRenderer
-                                routePath={activity.routePath}
-                                strokeColor="#3730a3"
-                                strokeWidth={8}
-                            />
-                        </div>
-                    </div>
-
-                    {/* Content Overlay */}
-                    <div className="absolute inset-0 z-10 flex flex-col justify-between p-10">
-                        {/* Header */}
-                        <div className="z-10 mt-2 flex justify-between items-start">
-                            <div className='flex flex-col gap-2'>
-                                <img src="/ESTE_LOGO.png" alt="Este.RUN" className="h-16 w-auto object-contain drop-shadow-[0_4px_8px_rgba(0,0,0,0.6)] mb-2" />
-                                <h2 className="text-3xl font-bold text-white/90 italic tracking-tight drop-shadow-md">{activity.title}</h2>
-                                {activity.location && (
-                                    <div className="flex items-center gap-2">
-                                        <MapPin size={24} className="text-orange-500 drop-shadow-md" />
-                                        <p className="text-white/90 font-bold text-lg drop-shadow-md">{activity.location}</p>
-                                    </div>
-                                )}
-                                <p className="text-white/80 font-bold text-lg drop-shadow-md">{new Date(activity.startTime).toLocaleDateString(language === 'id' ? 'id-ID' : 'en-US', { weekday: 'long', day: 'numeric', month: 'short' })}</p>
-                            </div>
-                        </div>
-
-                        {/* Main Stats (Bottom) */}
-                        <div className="z-10 mt-auto">
-                            <div className="flex items-baseline mb-6">
-                                <span className="text-[140px] leading-none font-black text-white italic tracking-tighter drop-shadow-2xl" style={{ textShadow: '0 8px 30px rgba(0,0,0,0.5)' }}>
-                                    {activity.distance.toFixed(2)}
-                                </span>
-                                <span className="text-5xl font-bold text-white italic ml-4 drop-shadow-xl">KM</span>
-                            </div>
-
-                            <div className="flex gap-16 items-end border-t-4 border-white/50 pt-6">
-                                <div>
-                                    <p className="text-white/90 font-bold text-sm uppercase tracking-widest mb-1 drop-shadow-md">{t('duration')}</p>
-                                    <p className="text-4xl font-black text-white italic tracking-tight drop-shadow-lg">{formatTime(activity.duration)}</p>
-                                </div>
-                                <div>
-                                    <p className="text-white/90 font-bold text-sm uppercase tracking-widest mb-1 drop-shadow-md">
-                                        {activity.type === 'walking' ? t('steps') : t('pace')}
-                                    </p>
-                                    <p className="text-4xl font-black text-white italic tracking-tight drop-shadow-lg">
-                                        {activity.type === 'walking' ? activity.steps : activity.pace}
-                                    </p>
-                                </div>
-                                <div>
-                                    <p className="text-white/90 font-bold text-sm uppercase tracking-widest mb-1 drop-shadow-md">{t('cal')}</p>
-                                    <p className="text-4xl font-black text-white italic tracking-tight drop-shadow-lg">{(activity.distance * 60).toFixed(0)}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div className="flex flex-col gap-3 mt-4">
-                <button onClick={handleStandardExport} disabled={isExporting} className="w-full bg-navy-900 text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-transform hover:bg-navy-800">
-                    <Download size={20} />
-                    {t('save')} (Full)
-                </button>
-                <button onClick={handleTransparentExport} disabled={isExporting} className="w-full bg-orange-600 text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-transform hover:bg-orange-700">
-                    <ImageIcon size={20} />
-                    {t('save')} (Overlay / Transparent)
+            {/* Bottom Floating Action Button for Share */}
+            <div className="fixed bottom-6 left-0 right-0 px-4 z-40 flex justify-center">
+                <button
+                    onClick={() => setShowShareModal(true)}
+                    className="bg-orange-600 text-white font-bold italic py-3 px-8 rounded-full shadow-xl shadow-orange-600/40 hover:bg-orange-700 active:scale-95 transition-all flex items-center gap-2"
+                >
+                    <Share2 size={20} />
+                    SHARE ACTIVITY
                 </button>
             </div>
         </Layout>
+    );
+};
+        </Layout >
     );
 };
 
