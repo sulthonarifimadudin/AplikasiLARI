@@ -120,7 +120,7 @@ const Dashboard = () => {
                     )}
                 </div>
 
-                </div>
+
 
                 {/* Weekly Recap Card (Spotify Wrapped Style) */}
                 {weeklyStats && weeklyStats.totalDistance > 0 && (
