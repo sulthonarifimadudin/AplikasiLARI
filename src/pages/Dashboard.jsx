@@ -7,16 +7,16 @@ import ActivityCard from '../components/ActivityCard';
 import { getActivities } from '../services/activityStorage';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../contexts/AuthContext';
-import { getWeeklyStats } from '../services/recapService';
+import { calculateStats } from '../services/recapService';
 import WeeklyRecapCard from '../components/WeeklyRecapCard';
 
-const Dashboard = () => {
+import { useEffect, useState } => {
     const { t } = useLanguage();
     const navigate = useNavigate();
     const { user } = useAuth(); // Get authenticated user
     const [activities, setActivities] = useState([]);
     const [weeklyStats, setWeeklyStats] = useState(null); // State for Recap
-    const [filteredDistance, setFilteredDistance] = useState(0);
+    const [stats, setStats] = useState(null); // Unified stats object
     const [loading, setLoading] = useState(true);
     const [timeRange, setTimeRange] = useState('week'); // week, month, year, all
     const [showRangeMenu, setShowRangeMenu] = useState(false);
@@ -40,25 +40,29 @@ const Dashboard = () => {
 
     useEffect(() => {
         if (!activities.length) {
-            setFilteredDistance(0);
+            setStats(null);
             return;
         }
 
         const now = new Date();
         let startPeriod;
+        let titleLabel = "All Time Wrap";
 
         switch (timeRange) {
             case 'week':
-                startPeriod = startOfWeek(now, { weekStartsOn: 1 }); // Monday start
+                startPeriod = startOfWeek(now, { weekStartsOn: 1 });
+                titleLabel = "Weekly Wrap";
                 break;
             case 'month':
                 startPeriod = startOfMonth(now);
+                titleLabel = "Monthly Wrap";
                 break;
             case 'year':
                 startPeriod = startOfYear(now);
+                titleLabel = "Yearly Wrap";
                 break;
             default:
-                startPeriod = null; // All time
+                startPeriod = null;
         }
 
         const filtered = activities.filter(act => {
@@ -66,8 +70,10 @@ const Dashboard = () => {
             return isAfter(new Date(act.startTime), startPeriod);
         });
 
-        const total = filtered.reduce((acc, curr) => acc + (curr.distance || 0), 0);
-        setFilteredDistance(total);
+        // Use helper to calculate everything
+        const calculated = calculateStats(filtered);
+        setStats({ ...calculated, title: titleLabel });
+
     }, [activities, timeRange]);
 
     const getRangeLabel = () => {
@@ -83,10 +89,10 @@ const Dashboard = () => {
         <Layout>
             {/* Sticky Header Section */}
             <div className="sticky top-0 z-40 -mx-4 -mt-6 px-4 pt-2 pb-4 mb-4 transition-all">
-                <div className="relative inline-block z-50">
+                <div className="relative inline-block z-50 mb-4">
                     <button
                         onClick={() => setShowRangeMenu(!showRangeMenu)}
-                        className="bg-navy-950/90 backdrop-blur-sm rounded-xl px-4 py-2 mb-2 shadow-lg flex items-center gap-2 text-white active:scale-95 transition-transform"
+                        className="bg-navy-950/90 backdrop-blur-sm rounded-xl px-4 py-2 shadow-lg flex items-center gap-2 text-white active:scale-95 transition-transform"
                     >
                         <span className="text-lg font-bold leading-none">{getRangeLabel()}</span>
                         <ChevronDown size={16} className={`transition-transformDuration-200 ${showRangeMenu ? 'rotate-180' : ''}`} />
@@ -120,28 +126,17 @@ const Dashboard = () => {
                     )}
                 </div>
 
-
-
-                {/* Weekly Recap Card (Spotify Wrapped Style) */}
-                {weeklyStats && weeklyStats.totalDistance > 0 && (
-                    <WeeklyRecapCard stats={weeklyStats} />
-                )}
-
-                <div
-                    onClick={() => navigate('/stats')}
-                    className="bg-gradient-to-br from-navy-800 to-navy-950 rounded-2xl p-6 text-white shadow-lg shadow-navy-900/20 cursor-pointer hover:shadow-xl hover:scale-[1.02] transition-all active:scale-[0.98]"
-                >
-                    <div className="flex justify-between items-start mb-4">
-                        <div>
-                            <p className="text-navy-100 font-medium text-sm">{t('total_distance')}</p>
-                            <h3 className="text-4xl font-bold tracking-tight">{filteredDistance.toFixed(1)} <span className="text-lg font-normal text-navy-200">km</span></h3>
-                        </div>
-                        <div className="bg-white/10 p-2 rounded-lg backdrop-blur-sm">
-                            <TrendingUp size={24} className="text-white" />
-                        </div>
+                {/* NEW: Compact Stats Banner (Replaces Total Distance) */}
+                {stats ? (
+                    <WeeklyRecapCard stats={stats} title={stats.title} />
+                ) : (
+                    /* Empty State or Zero Banner */
+                    <div className="bg-navy-800 rounded-2xl p-6 text-white text-center opacity-80">
+                        <p>No activity in this period</p>
                     </div>
-                </div>
+                )}
             </div>
+
 
             <div className="mb-4 flex justify-between items-end">
                 <h3 className="font-bold text-navy-900 dark:text-white text-lg">{t('last_activity')}</h3>
