@@ -6,11 +6,16 @@ import Layout from '../components/Layout';
 import ActivityCard from '../components/ActivityCard';
 import { getActivities } from '../services/activityStorage';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useAuth } from '../contexts/AuthContext';
+import { getWeeklyStats } from '../services/recapService';
+import WeeklyRecapCard from '../components/WeeklyRecapCard';
 
 const Dashboard = () => {
     const { t } = useLanguage();
     const navigate = useNavigate();
+    const { user } = useAuth(); // Get authenticated user
     const [activities, setActivities] = useState([]);
+    const [weeklyStats, setWeeklyStats] = useState(null); // State for Recap
     const [filteredDistance, setFilteredDistance] = useState(0);
     const [loading, setLoading] = useState(true);
     const [timeRange, setTimeRange] = useState('week'); // week, month, year, all
@@ -21,10 +26,17 @@ const Dashboard = () => {
             setLoading(true);
             const stored = await getActivities();
             setActivities(stored || []);
+
+            // Fetch Weekly Recap Stats
+            if (user) {
+                const stats = await getWeeklyStats(user.id);
+                setWeeklyStats(stats);
+            }
+
             setLoading(false);
         };
         fetchData();
-    }, []);
+    }, [user]);
 
     useEffect(() => {
         if (!activities.length) {
@@ -108,6 +120,13 @@ const Dashboard = () => {
                     )}
                 </div>
 
+                </div>
+
+                {/* Weekly Recap Card (Spotify Wrapped Style) */}
+                {weeklyStats && weeklyStats.totalDistance > 0 && (
+                    <WeeklyRecapCard stats={weeklyStats} />
+                )}
+
                 <div
                     onClick={() => navigate('/stats')}
                     className="bg-gradient-to-br from-navy-800 to-navy-950 rounded-2xl p-6 text-white shadow-lg shadow-navy-900/20 cursor-pointer hover:shadow-xl hover:scale-[1.02] transition-all active:scale-[0.98]"
@@ -144,7 +163,7 @@ const Dashboard = () => {
                     ))
                 )}
             </div>
-        </Layout>
+        </Layout >
     );
 };
 
