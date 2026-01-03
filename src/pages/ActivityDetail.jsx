@@ -400,8 +400,6 @@ const ActivityDetail = () => {
         </Layout>
     );
 };
-        </Layout >
-    );
-};
+
 
 export default ActivityDetail;
