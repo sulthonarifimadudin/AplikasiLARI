@@ -89,7 +89,7 @@ const Layout = ({ children }) => {
             </nav>
 
             {/* <CoachChat /> */}
-            <CoachChat />
+            {/* <CoachChat /> */}
         </div>
     );
 };

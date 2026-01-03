@@ -1,6 +1,7 @@
 // Access API Key from Environment Variables
 // Sanitize key (remove quotes/spaces if user accidentally added them)
-const API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY?.trim().replace(/^["']|["']$/g, '');
+// TEMPORARY DEBUG: Hardcoded key to bypass .env caching issues
+const API_KEY = "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"; // import.meta.env.VITE_OPENROUTER_API_KEY?.trim().replace(/^["']|["']$/g, '');
 
 const SYSTEM_PROMPT = `
 You are "Coach Este", an energetic, professional, and friendly Running Coach for the Este.RUN app.
@@ -19,6 +20,9 @@ export const sendMessageToGemini = async (history, newMessage) => {
 
     if (!API_KEY) return "Error: OpenRouter API Key not found. Please check your configuration.";
 
+    // DEBUG: Log key (safe) to check if hardcode is working
+    console.log("DEBUG: Using API Key:", API_KEY ? `${API_KEY.slice(0, 8)}...` : "UNDEFINED");
+
     try {
         // Construct messages for OpenAI-compatible API
         const messages = [
@@ -34,9 +38,8 @@ export const sendMessageToGemini = async (history, newMessage) => {
             method: "POST",
             headers: {
                 "Authorization": `Bearer ${API_KEY}`,
-                "Content-Type": "application/json",
-                "HTTP-Referer": "https://esterun.app", // Optional requirements for OpenRouter
-                "X-Title": "Este.RUN"
+                "Content-Type": "application/json"
+                // REMOVED REFERER to avoid 'User not found' on localhost
             },
             body: JSON.stringify({
                 "model": "deepseek/deepseek-chat", // Using DeepSeek via OpenRouter
