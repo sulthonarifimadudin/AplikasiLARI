@@ -34,6 +34,18 @@ export const sendMessageToGemini = async (history, newMessage) => {
             { role: "user", content: newMessage }
         ];
 
+        // DEBUG: LOG REQUEST
+        console.log("DEBUG: Sending request to OpenRouter:", {
+            url: "https://openrouter.ai/api/v1/chat/completions",
+            headers: {
+                "Authorization": `Bearer ${API_KEY.slice(0, 5)}...`,
+                "HTTP-Referer": "https://este.run",
+                "X-Title": "Este.RUN"
+            },
+            model: "xiaomi/mimo-v2-flash:free",
+            messageCount: messages.length
+        });
+
         const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
             method: "POST",
             headers: {
@@ -50,11 +62,17 @@ export const sendMessageToGemini = async (history, newMessage) => {
 
         if (!response.ok) {
             const errorData = await response.json().catch(() => ({}));
-            console.error("OpenRouter API Error Details:", errorData); // Log for debugging
+            console.error("OpenRouter API Error Details:", JSON.stringify(errorData, null, 2)); // Log full error object
             throw new Error(errorData.error?.message || `API Error: ${response.statusText}`);
         }
 
         const data = await response.json();
+        console.log("DEBUG: OpenRouter Response:", JSON.stringify(data, null, 2)); // Log full success response
+
+        if (!data.choices || data.choices.length === 0) {
+            throw new Error("No choices returned from API");
+        }
+
         return data.choices[0].message.content;
 
     } catch (error) {
