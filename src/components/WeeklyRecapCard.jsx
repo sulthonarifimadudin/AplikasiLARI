@@ -45,7 +45,7 @@ const WeeklyRecapCard = ({ stats, title = "Weekly Wrap" }) => {
                 {/* Middle Row: Main Stat (Distance) */}
                 <div className="flex items-baseline gap-1">
                     <span className="text-5xl font-black tracking-tighter">
-                        {stats.totalDistance.toFixed(1)}
+                        {(stats.totalDistance || 0).toFixed(1)}
                     </span>
                     <span className="text-base font-medium opacity-90">km</span>
                 </div>

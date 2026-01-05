@@ -8,4 +8,5 @@ export default defineConfig(({ mode }) => ({
     react(),
     mode === 'development' && basicSsl()
   ].filter(Boolean),
+  base: './', // CRITICAL: Required for Capacitor to load assets from file://
 }))

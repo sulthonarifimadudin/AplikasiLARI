@@ -97,7 +97,7 @@ const ActivityCard = ({ activity }) => {
             <div className="px-5 py-4 grid grid-cols-3 divide-x divide-gray-100 dark:divide-navy-800">
                 <div className="pr-4">
                     <p className="text-[10px] uppercase tracking-wider text-gray-400 dark:text-gray-500 font-bold">Jarak</p>
-                    <p className="text-xl font-black text-navy-900 dark:text-white">{activity.distance.toFixed(2)} <span className="text-xs font-normal text-gray-500">km</span></p>
+                    <p className="text-xl font-black text-navy-900 dark:text-white">{(activity.distance || 0).toFixed(2)} <span className="text-xs font-normal text-gray-500">km</span></p>
                 </div>
                 <div className="px-4">
                     <p className="text-[10px] uppercase tracking-wider text-gray-400 dark:text-gray-500 font-bold">Waktu</p>

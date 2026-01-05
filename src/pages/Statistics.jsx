@@ -79,15 +79,15 @@ const Statistics = () => {
             <div className="grid grid-cols-3 gap-3 mb-8">
                 <div className="bg-navy-50 dark:bg-navy-900 p-3 rounded-xl border border-navy-100 dark:border-navy-800 text-center">
                     <p className="text-xs text-navy-400 dark:text-navy-300 uppercase font-bold">{t('distance')}</p>
-                    <p className="text-lg font-bold text-navy-900 dark:text-white">{totalDist.toFixed(1)}k</p>
+                    <p className="text-lg font-bold text-navy-900 dark:text-white">{(totalDist || 0).toFixed(1)}k</p>
                 </div>
                 <div className="bg-navy-50 dark:bg-navy-900 p-3 rounded-xl border border-navy-100 dark:border-navy-800 text-center">
                     <p className="text-xs text-navy-400 dark:text-navy-300 uppercase font-bold">{t('duration')}</p>
-                    <p className="text-lg font-bold text-navy-900 dark:text-white">{totalTime.toFixed(1)}h</p>
+                    <p className="text-lg font-bold text-navy-900 dark:text-white">{(totalTime || 0).toFixed(1)}h</p>
                 </div>
                 <div className="bg-navy-50 dark:bg-navy-900 p-3 rounded-xl border border-navy-100 dark:border-navy-800 text-center">
                     <p className="text-xs text-navy-400 dark:text-navy-300 uppercase font-bold">{t('cal')}</p>
-                    <p className="text-lg font-bold text-navy-900 dark:text-white">{totalKcal.toFixed(0)}</p>
+                    <p className="text-lg font-bold text-navy-900 dark:text-white">{(totalKcal || 0).toFixed(0)}</p>
                 </div>
             </div>
 

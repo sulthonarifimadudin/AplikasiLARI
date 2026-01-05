@@ -223,8 +223,8 @@ const ActivityDetail = () => {
     const handleShareLink = async () => {
         setIsExporting(true);
         const shareUrl = window.location.href;
-        const shareTitle = `Lihat lari gue: ${activity.title} (${activity.distance.toFixed(1)}km)`;
-        const shareText = `Gue baru aja lari sejauh ${activity.distance.toFixed(2)}km di Este.RUN! Cek detailnya:`;
+        const shareTitle = `Lihat lari gue: ${activity.title} (${(activity.distance || 0).toFixed(1)}km)`;
+        const shareText = `Gue baru aja lari sejauh ${(activity.distance || 0).toFixed(2)}km di Este.RUN! Cek detailnya:`;
 
         try {
             if (!standardExportRef.current) return;
@@ -416,7 +416,7 @@ const ActivityDetail = () => {
                     <div className="mt-auto">
                         <div className="flex items-baseline mb-4">
                             <span className="text-[100px] leading-none font-black text-white italic tracking-tighter drop-shadow-2xl" style={{ textShadow: '0 4px 12px rgba(0,0,0,0.8)' }}>
-                                {activity.distance.toFixed(2)}
+                                {(activity.distance || 0).toFixed(2)}
                             </span>
                             <span className="text-3xl font-bold text-white italic ml-3 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] opacity-90">KM</span>
                         </div>
@@ -435,7 +435,7 @@ const ActivityDetail = () => {
                             </div>
                             <div>
                                 <p className="text-white/90 font-bold text-lg uppercase tracking-widest mb-0.5 drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">{t('cal')}</p>
-                                <p className="text-2xl font-black text-white italic tracking-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">{(activity.distance * 60).toFixed(0)}</p>
+                                <p className="text-2xl font-black text-white italic tracking-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">{((activity.distance || 0) * 60).toFixed(0)}</p>
                             </div>
                         </div>
                     </div>
@@ -480,7 +480,7 @@ const ActivityDetail = () => {
                         <div className="z-10 mt-auto">
                             <div className="flex items-baseline mb-6">
                                 <span className="text-[140px] leading-none font-black text-white italic tracking-tighter drop-shadow-2xl" style={{ textShadow: '0 8px 30px rgba(0,0,0,0.5)' }}>
-                                    {activity.distance.toFixed(2)}
+                                    {(activity.distance || 0).toFixed(2)}
                                 </span>
                                 <span className="text-5xl font-bold text-white italic ml-4 drop-shadow-xl">KM</span>
                             </div>
@@ -500,7 +500,7 @@ const ActivityDetail = () => {
                                 </div>
                                 <div>
                                     <p className="text-white/90 font-bold text-sm uppercase tracking-widest mb-1 drop-shadow-md">{t('cal')}</p>
-                                    <p className="text-4xl font-black text-white italic tracking-tight drop-shadow-lg">{(activity.distance * 60).toFixed(0)}</p>
+                                    <p className="text-4xl font-black text-white italic tracking-tight drop-shadow-lg">{((activity.distance || 0) * 60).toFixed(0)}</p>
                                 </div>
                             </div>
                         </div>

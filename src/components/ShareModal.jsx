@@ -103,7 +103,7 @@ const ShareModal = ({ isOpen, onClose, activity }) => {
                 <div className="mt-auto">
                     <div className="flex items-baseline mb-4">
                         <span className="text-[100px] leading-none font-black italic tracking-tighter drop-shadow-2xl" style={{ textShadow: '0 4px 12px rgba(0,0,0,0.8)' }}>
-                            {activity.distance.toFixed(2)}
+                            {(activity.distance || 0).toFixed(2)}
                         </span>
                         <span className="text-3xl font-bold ml-3 italic opacity-90 drop-shadow-lg">KM</span>
                     </div>
@@ -123,7 +123,7 @@ const ShareModal = ({ isOpen, onClose, activity }) => {
                         </div>
                         <div>
                             <p className="text-sm font-bold uppercase tracking-widest opacity-90 mb-1 drop-shadow-md">Cals</p>
-                            <p className="text-3xl font-black italic drop-shadow-lg">{(activity.distance * 60).toFixed(0)}</p>
+                            <p className="text-3xl font-black italic drop-shadow-lg">{((activity.distance || 0) * 60).toFixed(0)}</p>
                         </div>
                     </div>
                 </div>
@@ -161,7 +161,7 @@ const ShareModal = ({ isOpen, onClose, activity }) => {
                 <div className="text-center mb-10">
                     <div className="flex items-baseline justify-center mb-8">
                         <span className="text-[150px] leading-none font-black italic tracking-tighter drop-shadow-2xl" style={{ textShadow: '0 8px 24px rgba(0,0,0,0.6)' }}>
-                            {activity.distance.toFixed(2)}
+                            {(activity.distance || 0).toFixed(2)}
                         </span>
                         <span className="text-4xl font-bold ml-4 italic opacity-90 drop-shadow-lg">KM</span>
                     </div>
@@ -201,7 +201,7 @@ const ShareModal = ({ isOpen, onClose, activity }) => {
                 <div className="grid grid-cols-2 gap-y-6 gap-x-10">
                     <div>
                         <p className="text-xs text-gray-400 uppercase font-black tracking-wider">Distance</p>
-                        <p className="text-4xl font-black italic text-navy-950 tracking-tight">{activity.distance.toFixed(2)} <span className="text-base font-bold not-italic text-gray-400">km</span></p>
+                        <p className="text-4xl font-black italic text-navy-950 tracking-tight">{(activity.distance || 0).toFixed(2)} <span className="text-base font-bold not-italic text-gray-400">km</span></p>
                     </div>
                     <div>
                         <p className="text-xs text-gray-400 uppercase font-black tracking-wider">Time</p>
@@ -213,7 +213,7 @@ const ShareModal = ({ isOpen, onClose, activity }) => {
                     </div>
                     <div>
                         <p className="text-xs text-gray-400 uppercase font-black tracking-wider">Calories</p>
-                        <p className="text-4xl font-black italic text-navy-950 tracking-tight">{(activity.distance * 60).toFixed(0)}</p>
+                        <p className="text-4xl font-black italic text-navy-950 tracking-tight">{((activity.distance || 0) * 60).toFixed(0)}</p>
                     </div>
                 </div>
             </div>
@@ -235,7 +235,7 @@ const ShareModal = ({ isOpen, onClose, activity }) => {
 
             <div className="relative z-10">
                 <div className="flex items-baseline">
-                    <span className="text-[140px] leading-none font-black italic text-white drop-shadow-[0_8px_16px_rgba(0,0,0,0.8)] tracking-tighter">{activity.distance.toFixed(2)}</span>
+                    <span className="text-[140px] leading-none font-black italic text-white drop-shadow-[0_8px_16px_rgba(0,0,0,0.8)] tracking-tighter">{(activity.distance || 0).toFixed(2)}</span>
                     <span className="text-5xl font-bold text-white ml-4 drop-shadow-[0_4px_8px_rgba(0,0,0,0.8)] italic">KM</span>
                 </div>
                 <div className="flex gap-12 mt-6 border-t-4 border-white/40 pt-6 w-max">
