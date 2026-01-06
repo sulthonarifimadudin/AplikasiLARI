@@ -13,7 +13,7 @@ export const calculateStats = (activities) => {
             activityCount: 0,
             persona: "Ready to Start",
             personaEmoji: "👟",
-            personaColor: "" // Empty to trigger glass effect in component
+            personaColor: "from-slate-700 to-slate-600" // Dark grey default
         };
     }
 
