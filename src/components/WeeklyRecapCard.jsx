@@ -24,10 +24,10 @@ const WeeklyRecapCard = ({ stats, title = "Weekly Wrap" }) => {
         <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className={`relative overflow-hidden rounded-2xl p-5 text-white shadow-xl bg-gradient-to-br ${stats.personaColor || 'from-navy-600 to-navy-800'} mb-6`}
+            className={`relative overflow-hidden rounded-2xl p-5 text-white shadow-xl mb-6 ${stats.personaColor ? `bg-gradient-to-br ${stats.personaColor}` : 'bg-gray-900/40 backdrop-blur-md border border-white/10'}`}
         >
             {/* Background Pattern (Subtler) */}
-            <div className="absolute top-0 right-0 -mt-2 -mr-2 w-24 h-24 bg-white opacity-10 rounded-full blur-xl"></div>
+            <div className={`absolute top-0 right-0 -mt-2 -mr-2 w-24 h-24 bg-white rounded-full blur-xl ${stats.personaColor ? 'opacity-10' : 'opacity-5'}`}></div>
 
             <div className="relative z-10 flex flex-col gap-4">
                 {/* Top Row: Title & Persona */}
