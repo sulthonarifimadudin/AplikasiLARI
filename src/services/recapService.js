@@ -4,7 +4,18 @@ import { startOfWeek, endOfWeek, getHours, parseISO } from 'date-fns';
 
 // Helper to calculate stats from an array of activities (Synchronous)
 export const calculateStats = (activities) => {
-    if (!activities || activities.length === 0) return null;
+    if (!activities || activities.length === 0) {
+        return {
+            totalDistance: 0,
+            totalDuration: 0,
+            totalCalories: 0,
+            bestPace: 0,
+            activityCount: 0,
+            persona: "Ready to Start",
+            personaEmoji: "👟",
+            personaColor: "from-slate-700 to-slate-600" // Dark grey default
+        };
+    }
 
     // 1. Calculate Aggregates
     const totalDistance = activities.reduce((acc, curr) => acc + (curr.distance || 0), 0);
