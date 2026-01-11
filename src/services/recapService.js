@@ -64,7 +64,7 @@ export const calculateStats = (activities) => {
     }
 
     return {
-        totalDistance: totalDistance / 1000, // Convert to km
+        totalDistance: totalDistance, // Already in km
         totalDuration,
         totalCalories,
         bestPace,
