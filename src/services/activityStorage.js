@@ -40,7 +40,7 @@ export const getActivities = async () => {
 
         const { data, error } = await supabase
             .from('activities')
-            .select('*, profiles(username, full_name, avatar_url)')
+            .select('*')
             .eq('user_id', user.id)
             .order('start_time', { ascending: false });
 
@@ -83,12 +83,7 @@ const transformActivity = (record) => ({
     routePath: record.route_path,
     startTime: record.start_time,
     createdAt: record.created_at,
-    photoUrl: record.photo_url,
-    user: record.profiles ? {
-        username: record.profiles.username || 'Runner',
-        fullName: record.profiles.full_name || 'Este Runner',
-        avatarUrl: record.profiles.avatar_url
-    } : null
+    photoUrl: record.photo_url
 });
 
 export const updateActivityLocation = async (id, location) => {
