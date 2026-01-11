@@ -7,41 +7,14 @@ import { useAuth } from '../contexts/AuthContext';
 import { toggleLike, getLikeStatus } from '../services/socialService';
 import CommentSheet from './CommentSheet';
 
-const ActivityCard = ({ activity }) => {
-    const navigate = useNavigate();
-    const { user } = useAuth();
-    const [likes, setLikes] = useState(0);
-    const [isLiked, setIsLiked] = useState(false);
-    const [showComments, setShowComments] = useState(false);
+const ActivityCard = ({ activity, userProfile }) => {
+    // ... hooks ...
 
-    useEffect(() => {
-        const fetchLikes = async () => {
-            const status = await getLikeStatus(activity.id, user?.id);
-            setLikes(status.count);
-            setIsLiked(status.isLiked);
-        };
-        fetchLikes();
-    }, [activity.id, user?.id]);
-
-    const handleLike = async (e) => {
-        e.stopPropagation();
-        if (!user) return;
-
-        // Optimistic
-        setIsLiked(!isLiked);
-        setLikes(prev => isLiked ? prev - 1 : prev + 1);
-
-        const result = await toggleLike(activity.id, user.id);
-        if (result === null) {
-            // Revert on error
-            setIsLiked(isLiked);
-            setLikes(prev => isLiked ? prev + 1 : prev - 1);
-        }
-    };
-
-    const handleCommentClick = (e) => {
-        e.stopPropagation();
-        setShowComments(true);
+    // Determine user to display (Priority: activity.user > userProfile > default)
+    const displayUser = activity.user || userProfile || {
+        username: 'Runner',
+        avatar_url: null,
+        full_name: 'Este Runner'
     };
 
     return (
@@ -52,17 +25,40 @@ const ActivityCard = ({ activity }) => {
             {/* Header: User & Date */}
             <div className="px-5 py-4 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-navy-100 dark:bg-navy-800 flex items-center justify-center text-navy-700 dark:text-navy-200 font-bold text-sm">
-                        E
-                    </div>
+                    {/* AVATAR */}
+                    {displayUser.avatar_url ? (
+                        <img
+                            src={displayUser.avatar_url}
+                            alt={displayUser.username}
+                            className="w-10 h-10 rounded-full object-cover border border-gray-100 dark:border-navy-700"
+                        />
+                    ) : (
+                        <div className="w-10 h-10 rounded-full bg-navy-100 dark:bg-navy-800 flex items-center justify-center text-navy-700 dark:text-navy-200 font-bold text-sm">
+                            {displayUser.username?.[0]?.toUpperCase() || 'R'}
+                        </div>
+                    )}
+
+                    {/* USERNAME & DETAILS */}
                     <div>
-                        <h4 className="font-bold text-navy-900 dark:text-white leading-tight">{activity.title || 'Lari Santuy'}</h4>
-                        <div className="flex items-center gap-1 text-xs text-gray-400 dark:text-gray-500">
+                        <h4 className="font-bold text-navy-900 dark:text-white leading-tight">
+                            {displayUser.username || 'Runner'}
+                        </h4>
+                        <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
+                            {/* Activity Title */}
+                            <span className="font-medium text-navy-600 dark:text-navy-300">
+                                {activity.title || 'Lari Santuy'}
+                            </span>
+
+                            <span>•</span>
+
+                            {/* Date */}
                             <span>{new Date(activity.startTime).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}</span>
+
                             {activity.location && (
                                 <>
                                     <span>•</span>
-                                    <span>{activity.location.split(',')[0]}</span>
+                                    {/* Truncate location if too long */}
+                                    <span className="max-w-[100px] truncate">{activity.location.split(',')[0]}</span>
                                 </>
                             )}
                         </div>

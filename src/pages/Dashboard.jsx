@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout';
 import ActivityCard from '../components/ActivityCard';
 import { getActivities } from '../services/activityStorage';
+import { getProfile } from '../services/profileService'; // Import profile service
 import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../contexts/AuthContext';
 import { calculateStats } from '../services/recapService';
@@ -20,6 +21,7 @@ const Dashboard = () => {
     const [loading, setLoading] = useState(true);
     const [timeRange, setTimeRange] = useState('week'); // week, month, year, all
     const [showRangeMenu, setShowRangeMenu] = useState(false);
+    const [userProfile, setUserProfile] = useState(null);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -27,7 +29,11 @@ const Dashboard = () => {
             const stored = await getActivities();
             setActivities(stored || []);
 
-
+            // Fetch Profile safely
+            if (user?.id) {
+                const profileData = await getProfile(user.id);
+                setUserProfile(profileData);
+            }
 
             setLoading(false);
         };
@@ -149,9 +155,10 @@ const Dashboard = () => {
                         <p className="text-gray-400">{t('no_activities')}</p>
                     </div>
                 ) : (
-                    activities.map(activity => (
-                        <ActivityCard key={activity.id} activity={activity} />
-                    ))
+                ): (
+                        activities.map(activity => (
+                <ActivityCard key={activity.id} activity={activity} userProfile={userProfile} />
+                ))
                 )}
             </div>
         </Layout >
